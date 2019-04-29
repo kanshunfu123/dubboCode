@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xiaowei.sys.platform.core.common.dal.mapper.SysStandardDetailsDOMapper">
+    <!-- 自动生成,请修改 SYS_STANDARD_DETAILS.xml -->
+    <resultMap id="BaseResultMap"  type="com.xiaowei.sys.platform.core.common.dal.dataobject.SysStandardDetailsDO">
+        <id column="ID" property="id" jdbcType="BIGINT" javaType="Long"/>
+        <result column="DETAILS_ID" property="detailsId" jdbcType="BIGINT" javaType="Long"/>
+        <result column="DEL_FLAG" property="delFlag" jdbcType="CHAR" javaType="String"/>
+        <result column="MAX_PARM" property="maxParm" jdbcType="VARCHAR" javaType="String"/>
+        <result column="MIN_PARM" property="minParm" jdbcType="VARCHAR" javaType="String"/>
+        <result column="DETAIL_NAME" property="detailName" jdbcType="VARCHAR" javaType="String"/>
+        <result column="DETAIL_UUID" property="detailUuid" jdbcType="VARCHAR" javaType="String"/>
+    </resultMap>
+
+
+    <sql id="Base_SF_Column_List">
+        sf.ID,sf.DETAILS_ID,sf.MAX_PARM,sf.MIN_PARM,sf.DETAIL_NAME
+        ,sf.DETAIL_UUID
+    </sql>
+    <sql id="Base_Column_List">
+        ID,DETAILS_ID,MAX_PARM,MIN_PARM,DETAIL_NAME
+        ,DETAIL_UUID
+    </sql>
+
+
+    <!--插入表:sys_standard_details-->
+    <insert id="insert" >
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        <![CDATA[
+        INSERT INTO sys_standard_details(
+            ID
+            ,DETAILS_ID
+            ,MAX_PARM
+            ,MIN_PARM
+            ,DETAIL_NAME
+            ,DETAIL_UUID
+            ,DEL_FLAG
+        )VALUES(
+             null
+            , #{detailsId,jdbcType=BIGINT}
+            , #{maxParm,jdbcType=VARCHAR}
+            , #{minParm,jdbcType=VARCHAR}
+            , #{detailName,jdbcType=VARCHAR}
+            , #{detailUuid,jdbcType=VARCHAR}
+            ,0
+        )
+        ]]>
+    </insert>
+
+    <!--更新表:SYS_STANDARD_DETAILS-->
+    <update id="update" >
+        UPDATE /*MS-SYS-STANDARD-DETAILS-UPDATE*/ sys_standard_details
+        SET
+        DETAIL_NAME = #{detailName,jdbcType=VARCHAR}
+        ,MAX_PARM = #{maxParm,jdbcType=VARCHAR}
+        ,MIN_PARM = #{minParm,jdbcType=VARCHAR}
+        ,DEL_FLAG = '0'
+        WHERE
+        detail_uuid = #{detailUuid,jdbcType=VARCHAR}
+    </update>
+
+    <!--根据主键删除数据:SYS_STANDARD_DETAILS-->
+    <delete id="deleteById" >
+        DELETE /*MS-SYS-STANDARD-DETAILS-DELETEBYID*/ FROM sys_standard_details
+        WHERE
+        ID = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <!--根据Uuid删除数据:SYS_STANDARD_DETAILS-->
+    <delete id="deleteByUuId" >
+        UPDATE /*MS-SYS-STANDARD-DETAILS-DELETEBYUUID*/ sys_standard_details
+        SET
+        DEL_FLAG        = #{delFlag,jdbcType=CHAR}
+        WHERE
+        detail_uuid       = #{detaiUuid,jdbcType=VARCHAR}
+    </delete>
+
+    <!--根据DetailsId删除数据:SYS_STANDARD_DETAILS-->
+    <delete id="deleteByDetailsId" >
+        UPDATE /*MS-SYS-STANDARD-DETAILS-DELETEBYDETAILSID*/ sys_standard_details SET del_flag='1' WHERE details_id = #{detailsId,jdbcType=BIGINT}
+    </delete>
+
+    <!--根据主键获取数据:SYS_STANDARD_DETAILS-->
+    <select id="getById" resultMap="BaseResultMap">
+        SELECT /*MS-SYS-STANDARD-DETAILS-GETBYID*/  <include refid="Base_Column_List" /> FROM sys_standard_details
+        WHERE
+        ID = #{id,jdbcType=BIGINT}
+    </select>
+
+    <!--根据DetailsId获取数据:SYS_STANDARD_DETAILS-->
+    <select id="getByDetailsId" resultMap="BaseResultMap">
+        SELECT /*MS-SYS-STANDARD-DETAILS-GETBYDETAILSID*/  <include refid="Base_Column_List" /> FROM sys_standard_details
+        WHERE
+        DEL_FLAG = '0'
+        and
+        details_id = #{detailsId,jdbcType=BIGINT}
+    </select>
+</mapper>

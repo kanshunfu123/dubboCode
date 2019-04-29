@@ -1,0 +1,80 @@
+<!DOCTYPE table SYSTEM "../config/table-config-1.0.dtd">
+<table sqlname="sys_standard_details" physicalName="sys_standard_details" remark="SYS_STANDARD_DETAILS">
+    <!--  特殊字符说明 &lt;&gt; <> -->
+    <!-- baseSql option中 select * 会自动替换为 include -->
+    <sql id="Base_Column_List">
+        ID,DETAILS_ID,MAX_PARM,MIN_PARM,DETAIL_NAME
+        ,DETAIL_UUID
+    </sql>
+
+    <!-- baseSql option中 select sf.* 会自动替换为 include -->
+    <sql id="Base_SF_Column_List">
+        sf.ID,sf.DETAILS_ID,sf.MAX_PARM,sf.MIN_PARM,sf.DETAIL_NAME
+        ,sf.DETAIL_UUID
+    </sql>
+
+    <operation name="insert" paramtype="object" remark="插入表:sys_standard_details">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        <![CDATA[
+        INSERT INTO sys_standard_details(
+            ID
+            ,DETAILS_ID
+            ,MAX_PARM
+            ,MIN_PARM
+            ,DETAIL_NAME
+            ,DETAIL_UUID
+            ,DEL_FLAG
+        )VALUES(
+             null
+            , #{detailsId,jdbcType=BIGINT}
+            , #{maxParm,jdbcType=VARCHAR}
+            , #{minParm,jdbcType=VARCHAR}
+            , #{detailName,jdbcType=VARCHAR}
+            , #{detailUuid,jdbcType=VARCHAR}
+            ,0
+        )
+        ]]>
+    </operation>
+
+    <operation name="update" paramtype="object" remark="更新表:SYS_STANDARD_DETAILS">
+        UPDATE sys_standard_details
+        SET
+        DETAIL_NAME = #{detailName,jdbcType=VARCHAR}
+        ,MAX_PARM = #{maxParm,jdbcType=VARCHAR}
+        ,MIN_PARM = #{minParm,jdbcType=VARCHAR}
+        ,DEL_FLAG = '0'
+        WHERE
+        detail_uuid = #{detailUuid,jdbcType=VARCHAR}
+    </operation>
+
+    <operation name="deleteById" multiplicity="one" remark="根据主键删除数据:SYS_STANDARD_DETAILS">
+        DELETE FROM sys_standard_details
+        WHERE
+        ID = #{id,jdbcType=BIGINT}
+    </operation>
+    <operation name="deleteByUuId" multiplicity="one" remark="根据Uuid删除数据:SYS_STANDARD_DETAILS">
+        UPDATE sys_standard_details
+        SET
+        DEL_FLAG        = #{delFlag,jdbcType=CHAR}
+        WHERE
+        detail_uuid       = #{detaiUuid,jdbcType=VARCHAR}
+    </operation>
+    <operation name="deleteByDetailsId" multiplicity="one" remark="根据DetailsId删除数据:SYS_STANDARD_DETAILS">
+        UPDATE sys_standard_details SET del_flag='1' WHERE details_id = #{detailsId,jdbcType=BIGINT}
+    </operation>
+    <operation name="getById" multiplicity="one" remark="根据主键获取数据:SYS_STANDARD_DETAILS">
+        SELECT * FROM sys_standard_details
+        WHERE
+        ID = #{id,jdbcType=BIGINT}
+    </operation>
+    <operation name="getByDetailsId" multiplicity="many" remark="根据DetailsId获取数据:SYS_STANDARD_DETAILS">
+        SELECT * FROM sys_standard_details
+        WHERE
+        DEL_FLAG = '0'
+        and
+        details_id = #{detailsId,jdbcType=BIGINT}
+    </operation>
+</table>

@@ -1,0 +1,305 @@
+<!DOCTYPE table SYSTEM "../config/table-config-1.0.dtd">
+<table sqlname="SYS_DEPT" physicalName="SYS_DEPT" remark="部门表">
+    <!--  特殊字符说明  &lt;&gt;   <> -->
+
+    <operation name="insert" paramtype="object" remark="插入表:SYS_DEPT">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO SYS_DEPT(
+
+        DEL_FLAG
+        ,CREATE_BY
+        ,UPDATE_BY
+        ,SYS_DEPT_NAME
+        ,SYS_DEPT_UUID
+        ,SYS_DEPT_LEVEL
+        ,SYS_DEPT_REMARK
+        ,SYS_DEPT_PARENT_ID
+        ,SYS_DEPT_SEQ
+        ,CREATE_TIME
+        ,UPDATE_TIME
+        )VALUES(
+
+        #{delFlag,jdbcType=CHAR}
+        ,#{createBy,jdbcType=VARCHAR}
+        ,#{updateBy,jdbcType=VARCHAR}
+        ,#{sysDeptName,jdbcType=VARCHAR}
+        ,#{sysDeptUuid,jdbcType=VARCHAR}
+        ,#{sysDeptLevel,jdbcType=VARCHAR}
+        ,#{sysDeptRemark,jdbcType=VARCHAR}
+        ,#{sysDeptParentId,jdbcType=VARCHAR}
+        ,#{sysDeptSeq,jdbcType=INTEGER}
+        ,#{createTime,jdbcType=TIMESTAMP}
+        ,#{updateTime,jdbcType=TIMESTAMP}
+        )
+    </operation>
+
+    <operation name="update" paramtype="object" remark="更新表:SYS_DEPT">
+        UPDATE SYS_DEPT
+        SET
+        DEL_FLAG = #{delFlag,jdbcType=CHAR}
+        ,CREATE_BY = #{createBy,jdbcType=VARCHAR}
+        ,UPDATE_BY = #{updateBy,jdbcType=VARCHAR}
+        ,SYS_DEPT_NAME = #{sysDeptName,jdbcType=VARCHAR}
+        ,SYS_DEPT_UUID = #{sysDeptUuid,jdbcType=VARCHAR}
+        ,SYS_DEPT_LEVEL = #{sysDeptLevel,jdbcType=VARCHAR}
+        ,SYS_DEPT_REMARK = #{sysDeptRemark,jdbcType=VARCHAR}
+        ,SYS_DEPT_PARENT_ID = #{sysDeptParentId,jdbcType=VARCHAR}
+        ,SYS_DEPT_SEQ = #{sysDeptSeq,jdbcType=INTEGER}
+        ,CREATE_TIME = #{createTime,jdbcType=TIMESTAMP}
+        ,UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+        WHERE
+        ID = #{id,jdbcType=BIGINT}
+    </operation>
+
+    <operation name="deleteById" multiplicity="one" remark="根据主键删除数据:SYS_DEPT">
+        DELETE FROM sys_dept
+        WHERE
+        ID = #{id,jdbcType=BIGINT}
+    </operation>
+
+    <operation name="getById" multiplicity="one" remark="根据主键获取数据:SYS_DEPT">
+        SELECT * FROM sys_dept
+        WHERE
+        ID = #{id,jdbcType=BIGINT}
+    </operation>
+    <operation name="getByUuid" multiplicity="one" remark="根据UUID获取数据:SYS_DEPT">
+    SELECT * FROM sys_dept
+    WHERE
+    sys_dept_uuid = #{deptUuid,jdbcType=VARCHAR}
+</operation>
+    <operation name="getLevelByParentId" multiplicity="one" remark="根据 父级id 获取数据:SYS_DEPT">
+        SELECT * FROM sys_dept
+        WHERE
+            sys_dept_code_name=#{sysDeptCodeName,jdbcType=BIGINT}
+    </operation>
+    <operation name="allDeptPageList" multiplicity="paging" paging="allDeptPageList" remark="分页查询部门列表">
+        SELECT sys_dept_uuid,sys_dept_name FROM sys_dept WHERE del_flag=0
+    </operation>
+    <resultmap name="deptTreeResult" type="DeptTreeResult" remark="树形组织架构">
+        <column name="id" javatype="Long" jdbctype="BIGINT"/>
+        <column name="SYS_DEPT_PARENT_ID" javatype="Long" jdbctype="BIGINT"/>
+        <column name="DEL_FLAG" javatype="String" jdbctype="CHAR"/>
+        <column name="LABEL" javatype="String" jdbctype="VARCHAR"/>
+        <column name="SYS_DEPT_UUID" javatype="String" jdbctype="VARCHAR"/>
+        <column name="SYS_DEPT_LEVEL" javatype="String" jdbctype="VARCHAR"/>
+        <column name="SYS_DEPT_REMARK" javatype="String" jdbctype="VARCHAR"/>
+        <column name="SYS_DEPT_SEQ" javatype="Integer" jdbctype="INT"/>
+        <column name="sys_dept_code_name" javatype="Long"  jdbctype="BIGINT" />
+    </resultmap>
+    <resultmap name="getDeptInfoByUuid" type="GetDeptInfoByUuid" remark="树形组织架构">
+        <column name="id" javatype="Long" jdbctype="BIGINT"/>
+        <column name="SYS_DEPT_PARENT_ID" javatype="Long" jdbctype="BIGINT"/>
+        <column name="DEL_FLAG" javatype="String" jdbctype="CHAR"/>
+        <column name="SYS_DEPT_NAME" javatype="String" jdbctype="VARCHAR"/>
+        <column name="SYS_DEPT_UUID" javatype="String" jdbctype="VARCHAR"/>
+        <column name="SYS_DEPT_LEVEL" javatype="String" jdbctype="VARCHAR"/>
+        <column name="sys_dept_code_name" javatype="Long" jdbctype="BIGINT"/>
+        <column name="SYS_DEPT_REMARK" javatype="String" jdbctype="VARCHAR"/>
+        <column name="SYS_DEPT_SEQ" javatype="Integer" jdbctype="INT"/>
+    </resultmap>
+    <operation name="batchUpdateLevel" paramtype="objectList" resulttype="Integer" remark="部门更新之后，进行批量子部门">
+        <foreach collection="list" item="sysDept" separator=";">
+            UPDATE sys_dept
+            SET
+            sys_dept_parent_id=#{sysDept.sysDeptParentId,jdbcType=BIGINT},
+            sys_dept_level = #{sysDept.sysDeptLevel,jdbcType=VARCHAR},
+            update_time = #{sysDept.updateTime,jdbcType=TIMESTAMP},
+            update_by = #{sysDept.updateBy,jdbcType=VARCHAR}
+            WHERE id = #{sysDept.id,jdbcType=BIGINT}
+        </foreach>
+    </operation>
+    <operation name="deptTree" multiplicity="many" resultmap="deptTreeResult" remark="树形组织架构">
+        SELECT id
+        ,SYS_DEPT_NAME LABEL
+        ,SYS_DEPT_UUID
+        ,SYS_DEPT_LEVEL
+        ,SYS_DEPT_REMARK
+        ,sys_dept_code_name
+        ,DEL_FLAG
+        ,SYS_DEPT_SEQ
+        ,SYS_DEPT_PARENT_ID
+        FROM sys_dept WHERE  del_flag=0
+    </operation>
+    <operation name="countByNameAndParentId" multiplicity="one" resulttype="int" remark="同一层级下，部门名称是否相同">
+        SELECT COUNT(id) FROM sys_dept
+        <trim prefix="WHERE" prefixOverrides="AND || OR">
+            <if test="deptName!=null">
+                AND sys_dept_name=#{deptName,jdbcType=VARCHAR}
+            </if>
+            <if test="deptParentId!=null">
+                AND sys_dept_parent_id=#{deptParentId,jdbcType=BIGINT}
+            </if>
+            <if test="sysDeptUuid!=null">
+                AND SYS_DEPT_UUID != #{sysDeptUuid,jdbcType=BIGINT}
+            </if>
+            AND del_flag=0
+        </trim>
+    </operation>
+    <operation name="getChildDeptListByLevel" multiplicity="many" remark="查询子部门">
+        SELECT * FROM sys_dept
+        WHERE sys_dept_level LIKE CONCAT( #{level,jdbcType=VARCHAR},  '%') AND del_flag=0
+    </operation>
+    <operation name="getDeptInfoByUuid" multiplicity="one" resultmap="getDeptInfoByUuid" remark="根据uuid查看部门信息">
+        SELECT * FROM sys_dept
+        WHERE sys_dept_uuid=#{sysDeptUuid,jdbcType=VARCHAR} AND del_flag=0
+    </operation>
+    <operation name="getMAXdeptCodeName" resulttype="Long">
+        select max(sys_dept_code_name) FROM sys_dept
+    </operation>
+    <operation name="getDeptCodeName" multiplicity="one" paramtype="object" resulttype="Integer" remark="根据 部门参数值 全局唯一">
+        SELECT count(id) FROM sys_dept
+        <trim prefix="WHERE" prefixOverrides="AND || OR">
+            <!--<if test="id!=null">
+                id=#{id,deptParentId,jdbcType=BIGINT}
+            </if>-->
+            <if test="sysDeptCodeName!=null">
+                sys_dept_code_name=#{sysDeptCodeName,jdbcType=BIGINT}
+            </if>
+            <if test="sysDeptUuid!=null">
+                sys_dept_uuid!=#{sysDeptUuid,jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </operation>
+    <operation name="insertDept" paramtype="object" remark="新增部门">
+        insert into sys_dept
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="sysDeptUuid != null">
+                sys_dept_uuid,
+            </if>
+            <if test="sysDeptName != null">
+                sys_dept_name,
+            </if>
+            <if test="sysDeptCodeName != null">
+                sys_dept_code_name,
+            </if>
+            <if test="sysDeptParentId != null">
+                sys_dept_parent_id,
+            </if>
+            <if test="sysDeptLevel != null">
+                sys_dept_level,
+            </if>
+            <if test="sysDeptSeq != null">
+                sys_dept_seq,
+            </if>
+            <if test="sysDeptRemark != null">
+                sys_dept_remark,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="sysDeptUuid != null">
+                #{sysDeptUuid,jdbcType=VARCHAR},
+            </if>
+            <if test="sysDeptName != null">
+                #{sysDeptName,jdbcType=VARCHAR},
+            </if>
+            <if test="sysDeptCodeName != null">
+                #{sysDeptCodeName,jdbcType=BIGINT},
+            </if>
+            <if test="sysDeptParentId != null">
+                #{sysDeptParentId,jdbcType=BIGINT},
+            </if>
+            <if test="sysDeptLevel != null">
+                #{sysDeptLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="sysDeptSeq != null">
+                #{sysDeptSeq,jdbcType=INTEGER},
+            </if>
+            <if test="sysDeptRemark != null">
+                #{sysDeptRemark,jdbcType=VARCHAR},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag,jdbcType=CHAR},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </operation>
+    <operation name="updateDept" paramtype="object" remark="跟新部门信息">
+        update sys_dept
+        <set>
+            <if test="sysDeptUuid != null">
+                sys_dept_uuid = #{sysDeptUuid,jdbcType=VARCHAR},
+            </if>
+            <if test="sysDeptName != null">
+                sys_dept_name = #{sysDeptName,jdbcType=VARCHAR},
+            </if>
+            <if test="sysDeptCodeName != null">
+                sys_dept_code_name = #{sysDeptCodeName,jdbcType=BIGINT},
+            </if>
+            <if test="sysDeptParentId != null">
+                sys_dept_parent_id = #{sysDeptParentId,jdbcType=BIGINT},
+            </if>
+            <if test="sysDeptLevel != null">
+                sys_dept_level = #{sysDeptLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="sysDeptSeq != null">
+                sys_dept_seq = #{sysDeptSeq,jdbcType=INTEGER},
+            </if>
+            <if test="sysDeptRemark != null">
+                sys_dept_remark = #{sysDeptRemark,jdbcType=VARCHAR},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag,jdbcType=CHAR},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where sys_dept_uuid = #{sysDeptUuid,jdbcType=VARCHAR}
+    </operation>
+    <operation name="getDeptByUUID" multiplicity="one" remark="根据部门的id查看 部门对象">
+        SELECT id
+        ,SYS_DEPT_NAME LABEL
+        ,SYS_DEPT_UUID
+        ,SYS_DEPT_LEVEL
+        ,SYS_DEPT_REMARK
+        ,sys_dept_code_name
+        ,DEL_FLAG
+        ,SYS_DEPT_SEQ
+        ,SYS_DEPT_PARENT_ID
+        FROM sys_dept WHERE  del_flag=0 and ID = #{id,jdbcType=BIGINT}
+    </operation>
+</table>

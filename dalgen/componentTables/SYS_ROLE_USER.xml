@@ -1,0 +1,143 @@
+<!DOCTYPE table SYSTEM "../config/table-config-1.0.dtd">
+<table sqlname="sys_role_user" physicalName="sys_role_user" remark="角色和用户中间表">
+    <!--  特殊字符说明 &lt;&gt; <> -->
+    <!-- baseSql option中 select * 会自动替换为 include -->
+    <sql id="Base_Column_List">
+        ID,ROLE_ID,USER_ID,DEL_FLAG,CREATE_BY
+        ,UPDATE_BY,SYS_ROLE_USER_UUID,CREATE_TIME,UPDATE_TIME
+    </sql>
+
+    <!-- baseSql option中 select sf.* 会自动替换为 include -->
+    <sql id="Base_SF_Column_List">
+        sf.ID,sf.ROLE_ID,sf.USER_ID,sf.DEL_FLAG,sf.CREATE_BY
+        ,sf.UPDATE_BY,sf.SYS_ROLE_USER_UUID,sf.CREATE_TIME,sf.UPDATE_TIME
+    </sql>
+
+    <operation name="insert" paramtype="object" remark="插入表:sys_role_user">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        <![CDATA[
+        INSERT INTO sys_role_user(
+            ID
+            ,ROLE_ID
+            ,USER_ID
+            ,DEL_FLAG
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,SYS_ROLE_USER_UUID
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES(
+             null
+            , #{roleId,jdbcType=BIGINT}
+            , #{userId,jdbcType=BIGINT}
+            , #{delFlag,jdbcType=CHAR}
+            , #{createBy,jdbcType=VARCHAR}
+            , #{updateBy,jdbcType=VARCHAR}
+            , #{sysRoleUserUuid,jdbcType=VARCHAR}
+            , #{createTime,jdbcType=TIMESTAMP}
+            , #{updateTime,jdbcType=TIMESTAMP}
+        )
+        ]]>
+    </operation>
+
+    <!-- foreach 可以自定义类型，paramtype="primitive" foreach->javatype="自己书写的类"  -->
+    <!-- 只有一个参数且为List时必须将参数命名为list -->
+    <operation name="insertBatch" paramtype="objectList" remark="批量插入表:sys_role_user">
+        INSERT INTO sys_role_user(
+        ID
+        ,ROLE_ID
+        ,USER_ID
+        ,DEL_FLAG
+        ,CREATE_BY
+        ,UPDATE_BY
+        ,SYS_ROLE_USER_UUID
+        ,CREATE_TIME
+        ,UPDATE_TIME
+        )VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            null
+            , #{item.roleId,jdbcType=BIGINT}
+            , #{item.userId,jdbcType=BIGINT}
+            , #{item.delFlag,jdbcType=CHAR}
+            , #{item.createBy,jdbcType=VARCHAR}
+            , #{item.updateBy,jdbcType=VARCHAR}
+            , #{item.sysRoleUserUuid,jdbcType=VARCHAR}
+            , #{item.createTime,jdbcType=TIMESTAMP}
+            , #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </operation>
+
+    <!-- 不推荐使用全 update 有需要自己打开
+    <operation name="update" paramtype="object" remark="更新表:sys_role_user">
+        <![CDATA[
+        UPDATE sys_role_user
+        SET
+            ROLE_ID         = #{roleId,jdbcType=BIGINT}
+            ,USER_ID         = #{userId,jdbcType=BIGINT}
+            ,DEL_FLAG        = #{delFlag,jdbcType=CHAR}
+            ,CREATE_BY       = #{createBy,jdbcType=VARCHAR}
+            ,UPDATE_BY       = #{updateBy,jdbcType=VARCHAR}
+            ,SYS_ROLE_USER_UUID = #{sysRoleUserUuid,jdbcType=VARCHAR}
+            ,CREATE_TIME     = #{createTime,jdbcType=TIMESTAMP}
+            ,UPDATE_TIME     = #{updateTime,jdbcType=TIMESTAMP}
+        WHERE
+            ID              = #{id,jdbcType=BIGINT}
+        ]]>
+    </operation>
+    -->
+    <operation name="deleteById" remark="根据主键删除数据:sys_role_user">
+        <![CDATA[
+        DELETE FROM sys_role_user
+        WHERE
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </operation>
+
+    <operation name="getById" multiplicity="one" remark="根据主键获取数据:sys_role_user">
+        SELECT *
+        FROM sys_role_user
+        WHERE
+        <![CDATA[
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </operation>
+    <operation name="insertBatchTwo" paramtype="objectList" remark="批量插入用户角色">
+        insert into sys_role_user (sys_role_user_uuid, role_id,
+        user_id, del_flag, create_by,
+        create_time, update_time, update_by)
+        values
+        <foreach collection="list" item="roleAcl" separator=",">
+            ( #{roleAcl.sysRoleUserUuid,jdbcType=VARCHAR}, #{roleAcl.roleId,jdbcType=BIGINT},
+            #{roleAcl.userId,jdbcType=BIGINT}, #{roleAcl.delFlag,jdbcType=CHAR}, #{roleAcl.createBy,jdbcType=VARCHAR},
+            #{roleAcl.createTime,jdbcType=TIMESTAMP}, #{roleAcl.updateTime,jdbcType=TIMESTAMP}, #{roleAcl.updateBy,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </operation>
+    <operation name="updateBatch" paramtype="objectList" remark="批量更新用户角色">
+        <foreach collection="list" item="item" separator=";">
+            update sys_role_user set
+            del_flag = #{item.delFlag,jdbcType=CHAR},
+            update_time = #{item.updateTime,jdbcType=TIMESTAMP},
+            update_by = #{item.updateBy,jdbcType=VARCHAR}
+            where user_id =#{item.userId,jdbcType=BIGINT}
+        </foreach>
+    </operation>
+    <operation name="getRoleAndUserListByUserid" multiplicity="many" remark="根据用户的id查询出用户与角色的关系">
+        select * from sys_role_user where user_id=#{userId,jdbcType=VARCHAR} and del_flag=0
+    </operation>
+    <operation name="getRoleIdListByUserId" multiplicity="many" resulttype="Long" remark="得到用户已分配的角色id">
+        SELECT role_id
+        FROM sys_role_user
+        WHERE user_id =#{userId,jdbcType=BIGINT} AND del_flag=0
+    </operation>
+    <operation name="findRoleUserByRoleId" multiplicity="many" remark="根据角色id查询用户角色关系是否存在">
+        select * from sys_role_user
+        where
+        role_id=#{roleId,jdbcType=BIGINT}
+    </operation>
+</table>

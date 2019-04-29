@@ -1,0 +1,159 @@
+<!DOCTYPE table SYSTEM "../config/table-config-1.0.dtd">
+<table sqlname="sys_acl_module" physicalName="sys_acl_module" remark="权限模块表   引入权限模块就可以很容易把菜单层级定义出来，每个菜单项下面有哪些功能就可以在权限模块下面定义权限点，然后就可以根据每个人分配到的权限生成不同的基于权限的菜单">
+    <!--  特殊字符说明 &lt;&gt; <> -->
+    <!-- baseSql option中 select * 会自动替换为 include -->
+    <sql id="Base_Column_List">
+        ID,SYS_ACL_MODULE_PARENT_ID,DEL_FLAG,CREATE_BY,UPDATE_BY 
+        ,SYS_ACL_MODULE_CODE,SYS_ACL_MODULE_ICON,SYS_ACL_MODULE_NAME,SYS_ACL_MODULE_UUID,SYS_ACL_MODULE_LEVEL 
+        ,SYS_ACL_MODULE_REMARK,SYS_ACL_MODULE_SEQ,CREATE_TIME,UPDATE_TIME
+    </sql>
+
+    <!-- baseSql option中 select sf.* 会自动替换为 include -->
+    <sql id="Base_SF_Column_List">
+        sf.ID,sf.SYS_ACL_MODULE_PARENT_ID,sf.DEL_FLAG,sf.CREATE_BY,sf.UPDATE_BY
+        ,sf.SYS_ACL_MODULE_CODE,sf.SYS_ACL_MODULE_ICON,sf.SYS_ACL_MODULE_NAME,sf.SYS_ACL_MODULE_UUID,sf.SYS_ACL_MODULE_LEVEL
+        ,sf.SYS_ACL_MODULE_REMARK,sf.SYS_ACL_MODULE_SEQ,sf.CREATE_TIME,sf.UPDATE_TIME
+    </sql>
+
+    <operation name="insert" paramtype="object" remark="插入表:sys_acl_module">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        <![CDATA[
+        INSERT INTO sys_acl_module(
+            ID
+            ,SYS_ACL_MODULE_PARENT_ID
+            ,DEL_FLAG
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,SYS_ACL_MODULE_CODE
+            ,SYS_ACL_MODULE_ICON
+            ,SYS_ACL_MODULE_NAME
+            ,SYS_ACL_MODULE_UUID
+            ,SYS_ACL_MODULE_LEVEL
+            ,SYS_ACL_MODULE_REMARK
+            ,SYS_ACL_MODULE_SEQ
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES(
+             null
+            , #{sysAclModuleParentId,jdbcType=BIGINT}
+            , #{delFlag,jdbcType=CHAR}
+            , #{createBy,jdbcType=VARCHAR}
+            , #{updateBy,jdbcType=VARCHAR}
+            , #{sysAclModuleCode,jdbcType=VARCHAR}
+            , #{sysAclModuleIcon,jdbcType=VARCHAR}
+            , #{sysAclModuleName,jdbcType=VARCHAR}
+            , #{sysAclModuleUuid,jdbcType=VARCHAR}
+            , #{sysAclModuleLevel,jdbcType=VARCHAR}
+            , #{sysAclModuleRemark,jdbcType=VARCHAR}
+            , #{sysAclModuleSeq,jdbcType=INTEGER}
+            , #{createTime,jdbcType=TIMESTAMP}
+            , #{updateTime,jdbcType=TIMESTAMP}
+        )
+        ]]>
+    </operation>
+
+    <!-- foreach 可以自定义类型，paramtype="primitive" foreach->javatype="自己书写的类"  -->
+    <!-- 只有一个参数且为List时必须将参数命名为list -->
+    <operation name="insertBatch" paramtype="objectList" remark="批量插入表:sys_acl_module">
+        INSERT INTO sys_acl_module(
+            ID
+            ,SYS_ACL_MODULE_PARENT_ID
+            ,DEL_FLAG
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,SYS_ACL_MODULE_CODE
+            ,SYS_ACL_MODULE_ICON
+            ,SYS_ACL_MODULE_NAME
+            ,SYS_ACL_MODULE_UUID
+            ,SYS_ACL_MODULE_LEVEL
+            ,SYS_ACL_MODULE_REMARK
+            ,SYS_ACL_MODULE_SEQ
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES
+        <foreach collection="list"  item="item" separator=",">
+            (
+                 null
+                , #{item.sysAclModuleParentId,jdbcType=BIGINT}
+                , #{item.delFlag,jdbcType=CHAR}
+                , #{item.createBy,jdbcType=VARCHAR}
+                , #{item.updateBy,jdbcType=VARCHAR}
+                , #{item.sysAclModuleCode,jdbcType=VARCHAR}
+                , #{item.sysAclModuleIcon,jdbcType=VARCHAR}
+                , #{item.sysAclModuleName,jdbcType=VARCHAR}
+                , #{item.sysAclModuleUuid,jdbcType=VARCHAR}
+                , #{item.sysAclModuleLevel,jdbcType=VARCHAR}
+                , #{item.sysAclModuleRemark,jdbcType=VARCHAR}
+                , #{item.sysAclModuleSeq,jdbcType=INTEGER}
+                , #{item.createTime,jdbcType=TIMESTAMP}
+                , #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </operation>
+
+    <!-- 不推荐使用全 update 有需要自己打开
+    <operation name="update" paramtype="object" remark="更新表:sys_acl_module">
+        <![CDATA[
+        UPDATE sys_acl_module
+        SET
+            SYS_ACL_MODULE_PARENT_ID = #{sysAclModuleParentId,jdbcType=BIGINT}
+            ,DEL_FLAG        = #{delFlag,jdbcType=CHAR}
+            ,CREATE_BY       = #{createBy,jdbcType=VARCHAR}
+            ,UPDATE_BY       = #{updateBy,jdbcType=VARCHAR}
+            ,SYS_ACL_MODULE_CODE = #{sysAclModuleCode,jdbcType=VARCHAR}
+            ,SYS_ACL_MODULE_ICON = #{sysAclModuleIcon,jdbcType=VARCHAR}
+            ,SYS_ACL_MODULE_NAME = #{sysAclModuleName,jdbcType=VARCHAR}
+            ,SYS_ACL_MODULE_UUID = #{sysAclModuleUuid,jdbcType=VARCHAR}
+            ,SYS_ACL_MODULE_LEVEL = #{sysAclModuleLevel,jdbcType=VARCHAR}
+            ,SYS_ACL_MODULE_REMARK = #{sysAclModuleRemark,jdbcType=VARCHAR}
+            ,SYS_ACL_MODULE_SEQ = #{sysAclModuleSeq,jdbcType=INTEGER}
+            ,CREATE_TIME     = #{createTime,jdbcType=TIMESTAMP}
+            ,UPDATE_TIME     = #{updateTime,jdbcType=TIMESTAMP}
+        WHERE
+            ID              = #{id,jdbcType=BIGINT}
+        ]]>
+    </operation>
+    -->
+    <operation name="deleteById"  remark="根据主键删除数据:sys_acl_module">
+        <![CDATA[
+        DELETE FROM sys_acl_module
+        WHERE
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </operation>
+
+    <operation name="getById" multiplicity="one" remark="根据主键获取数据:sys_acl_module">
+        SELECT *
+        FROM sys_acl_module
+        WHERE
+        <![CDATA[
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </operation>
+    <operation name="getAllAclModel" paramtype="object" multiplicity="many" remark="得到所有的权限模块">
+        select
+        ID
+        ,SYS_ACL_MODULE_PARENT_ID
+        ,SYS_ACL_MODULE_CODE
+        ,SYS_ACL_MODULE_NAME
+        ,SYS_ACL_MODULE_UUID
+        ,SYS_ACL_MODULE_LEVEL
+        ,SYS_ACL_MODULE_SEQ
+        ,sys_acl_module_type
+        from sys_acl_module
+        where del_flag=0
+            <if test="sysAclModuleType!=null">
+                and sys_acl_module_type=#{sysAclModuleType,jdbcType=INTEGER}
+            </if>
+    </operation>
+    <operation name="getModuleByAclModuleId" remark="根据权限点的模块id 得到对象">
+        select
+        sys_acl_module_name
+        from sys_acl_module
+        where del_flag=0
+        AND id=#{id,jdbcType=BIGINT}
+    </operation>
+</table>

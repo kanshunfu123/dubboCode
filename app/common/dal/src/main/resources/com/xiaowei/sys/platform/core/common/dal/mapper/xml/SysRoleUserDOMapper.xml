@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xiaowei.sys.platform.core.common.dal.mapper.SysRoleUserDOMapper">
+    <!-- 自动生成,请修改 SYS_ROLE_USER.xml -->
+    <resultMap id="BaseResultMap"  type="com.xiaowei.sys.platform.core.common.dal.dataobject.SysRoleUserDO">
+        <id column="ID" property="id" jdbcType="BIGINT" javaType="Long"/>
+        <result column="ROLE_ID" property="roleId" jdbcType="BIGINT" javaType="Long"/>
+        <result column="USER_ID" property="userId" jdbcType="BIGINT" javaType="Long"/>
+        <result column="DEL_FLAG" property="delFlag" jdbcType="CHAR" javaType="String"/>
+        <result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" javaType="String"/>
+        <result column="UPDATE_BY" property="updateBy" jdbcType="VARCHAR" javaType="String"/>
+        <result column="SYS_ROLE_USER_UUID" property="sysRoleUserUuid" jdbcType="VARCHAR" javaType="String"/>
+        <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+    </resultMap>
+
+
+    <sql id="Base_SF_Column_List">
+        sf.ID,sf.ROLE_ID,sf.USER_ID,sf.DEL_FLAG,sf.CREATE_BY
+        ,sf.UPDATE_BY,sf.SYS_ROLE_USER_UUID,sf.CREATE_TIME,sf.UPDATE_TIME
+    </sql>
+    <sql id="Base_Column_List">
+        ID,ROLE_ID,USER_ID,DEL_FLAG,CREATE_BY
+        ,UPDATE_BY,SYS_ROLE_USER_UUID,CREATE_TIME,UPDATE_TIME
+    </sql>
+
+
+    <!--插入表:sys_role_user-->
+    <insert id="insert" >
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        <![CDATA[
+        INSERT INTO sys_role_user(
+            ID
+            ,ROLE_ID
+            ,USER_ID
+            ,DEL_FLAG
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,SYS_ROLE_USER_UUID
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES(
+             null
+            , #{roleId,jdbcType=BIGINT}
+            , #{userId,jdbcType=BIGINT}
+            , #{delFlag,jdbcType=CHAR}
+            , #{createBy,jdbcType=VARCHAR}
+            , #{updateBy,jdbcType=VARCHAR}
+            , #{sysRoleUserUuid,jdbcType=VARCHAR}
+            , #{createTime,jdbcType=TIMESTAMP}
+            , #{updateTime,jdbcType=TIMESTAMP}
+        )
+        ]]>
+    </insert>
+
+    <!--批量插入表:sys_role_user-->
+    <insert id="insertBatch" >
+        INSERT INTO sys_role_user(
+        ID
+        ,ROLE_ID
+        ,USER_ID
+        ,DEL_FLAG
+        ,CREATE_BY
+        ,UPDATE_BY
+        ,SYS_ROLE_USER_UUID
+        ,CREATE_TIME
+        ,UPDATE_TIME
+        )VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            null
+            , #{item.roleId,jdbcType=BIGINT}
+            , #{item.userId,jdbcType=BIGINT}
+            , #{item.delFlag,jdbcType=CHAR}
+            , #{item.createBy,jdbcType=VARCHAR}
+            , #{item.updateBy,jdbcType=VARCHAR}
+            , #{item.sysRoleUserUuid,jdbcType=VARCHAR}
+            , #{item.createTime,jdbcType=TIMESTAMP}
+            , #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <!--根据主键删除数据:sys_role_user-->
+    <delete id="deleteById" >
+        <![CDATA[
+        DELETE /*MS-SYS-ROLE-USER-DELETEBYID*/ FROM sys_role_user
+        WHERE
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </delete>
+
+    <!--根据主键获取数据:sys_role_user-->
+    <select id="getById" resultMap="BaseResultMap">
+        SELECT /*MS-SYS-ROLE-USER-GETBYID*/  <include refid="Base_Column_List" />
+        FROM sys_role_user
+        WHERE
+        <![CDATA[
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </select>
+
+    <!--批量插入用户角色-->
+    <insert id="insertBatchTwo" >
+        insert into sys_role_user (sys_role_user_uuid, role_id,
+        user_id, del_flag, create_by,
+        create_time, update_time, update_by)
+        values
+        <foreach collection="list" item="roleAcl" separator=",">
+            ( #{roleAcl.sysRoleUserUuid,jdbcType=VARCHAR}, #{roleAcl.roleId,jdbcType=BIGINT},
+            #{roleAcl.userId,jdbcType=BIGINT}, #{roleAcl.delFlag,jdbcType=CHAR}, #{roleAcl.createBy,jdbcType=VARCHAR},
+            #{roleAcl.createTime,jdbcType=TIMESTAMP}, #{roleAcl.updateTime,jdbcType=TIMESTAMP}, #{roleAcl.updateBy,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <!--批量更新用户角色-->
+    <update id="updateBatch" >
+        <foreach collection="list" item="item" separator=";">
+            update /*MS-SYS-ROLE-USER-UPDATEBATCH*/ sys_role_user set
+            del_flag = #{item.delFlag,jdbcType=CHAR},
+            update_time = #{item.updateTime,jdbcType=TIMESTAMP},
+            update_by = #{item.updateBy,jdbcType=VARCHAR}
+            where user_id =#{item.userId,jdbcType=BIGINT}
+        </foreach>
+    </update>
+
+    <!--根据用户的id查询出用户与角色的关系-->
+    <select id="getRoleAndUserListByUserid" resultMap="BaseResultMap">
+        select /*MS-SYS-ROLE-USER-GETROLEANDUSERLISTBYUSERID*/ <include refid="Base_Column_List" /> from sys_role_user where user_id=#{userId,jdbcType=VARCHAR} and del_flag=0
+    </select>
+
+    <!--得到用户已分配的角色id-->
+    <select id="getRoleIdListByUserId" resultType="Long">
+        SELECT /*MS-SYS-ROLE-USER-GETROLEIDLISTBYUSERID*/  role_id
+        FROM sys_role_user
+        WHERE user_id =#{userId,jdbcType=BIGINT} AND del_flag=0
+    </select>
+
+    <!--根据角色id查询用户角色关系是否存在-->
+    <select id="findRoleUserByRoleId" resultMap="BaseResultMap">
+        select /*MS-SYS-ROLE-USER-FINDROLEUSERBYROLEID*/ <include refid="Base_Column_List" /> from sys_role_user
+        where
+        role_id=#{roleId,jdbcType=BIGINT}
+    </select>
+</mapper>

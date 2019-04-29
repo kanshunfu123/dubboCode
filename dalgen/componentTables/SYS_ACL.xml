@@ -1,0 +1,202 @@
+<!DOCTYPE table SYSTEM "../config/table-config-1.0.dtd">
+<table sqlname="sys_acl" physicalName="sys_acl" remark="权限点表">
+    <!--  特殊字符说明 &lt;&gt; <> -->
+    <!-- baseSql option中 select * 会自动替换为 include -->
+    <sql id="Base_Column_List">
+        ID,SYS_ACL_MODULE_ID,REMARK,DEL_FLAG,CREATE_BY
+        ,UPDATE_BY,SYS_ACL_URL,SYS_ACL_CODE,SYS_ACL_ICON,SYS_ACL_NAME
+        ,SYS_ACL_TYPE,SYS_ACL_UUID,SYS_ACL_SEQ,CREATE_TIME,UPDATE_TIME
+    </sql>
+
+    <!-- baseSql option中 select sf.* 会自动替换为 include -->
+    <sql id="Base_SF_Column_List">
+        sf.ID,sf.SYS_ACL_MODULE_ID,sf.REMARK,sf.DEL_FLAG,sf.CREATE_BY
+        ,sf.UPDATE_BY,sf.SYS_ACL_URL,sf.SYS_ACL_CODE,sf.SYS_ACL_ICON,sf.SYS_ACL_NAME
+        ,sf.SYS_ACL_TYPE,sf.SYS_ACL_UUID,sf.SYS_ACL_SEQ,sf.CREATE_TIME,sf.UPDATE_TIME
+    </sql>
+
+    <operation name="insert" paramtype="object" remark="插入表:sys_acl">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        <![CDATA[
+        INSERT INTO sys_acl(
+            ID
+            ,SYS_ACL_MODULE_ID
+            ,REMARK
+            ,DEL_FLAG
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,SYS_ACL_URL
+            ,SYS_ACL_CODE
+            ,SYS_ACL_ICON
+            ,SYS_ACL_NAME
+            ,SYS_ACL_TYPE
+            ,SYS_ACL_UUID
+            ,SYS_ACL_SEQ
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES(
+             null
+            , #{sysAclModuleId,jdbcType=BIGINT}
+            , #{remark,jdbcType=VARCHAR}
+            , #{delFlag,jdbcType=CHAR}
+            , #{createBy,jdbcType=VARCHAR}
+            , #{updateBy,jdbcType=VARCHAR}
+            , #{sysAclUrl,jdbcType=VARCHAR}
+            , #{sysAclCode,jdbcType=VARCHAR}
+            , #{sysAclIcon,jdbcType=VARCHAR}
+            , #{sysAclName,jdbcType=VARCHAR}
+            , #{sysAclType,jdbcType=CHAR}
+            , #{sysAclUuid,jdbcType=VARCHAR}
+            , #{sysAclSeq,jdbcType=INTEGER}
+            , #{createTime,jdbcType=TIMESTAMP}
+            , #{updateTime,jdbcType=TIMESTAMP}
+        )
+        ]]>
+    </operation>
+
+    <!-- foreach 可以自定义类型，paramtype="primitive" foreach->javatype="自己书写的类"  -->
+    <!-- 只有一个参数且为List时必须将参数命名为list -->
+    <operation name="insertBatch" paramtype="objectList" remark="批量插入表:sys_acl">
+        INSERT INTO sys_acl(
+        ID
+        ,SYS_ACL_MODULE_ID
+        ,REMARK
+        ,DEL_FLAG
+        ,CREATE_BY
+        ,UPDATE_BY
+        ,SYS_ACL_URL
+        ,SYS_ACL_CODE
+        ,SYS_ACL_ICON
+        ,SYS_ACL_NAME
+        ,SYS_ACL_TYPE
+        ,SYS_ACL_UUID
+        ,SYS_ACL_SEQ
+        ,CREATE_TIME
+        ,UPDATE_TIME
+        )VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            null
+            , #{item.sysAclModuleId,jdbcType=BIGINT}
+            , #{item.remark,jdbcType=VARCHAR}
+            , #{item.delFlag,jdbcType=CHAR}
+            , #{item.createBy,jdbcType=VARCHAR}
+            , #{item.updateBy,jdbcType=VARCHAR}
+            , #{item.sysAclUrl,jdbcType=VARCHAR}
+            , #{item.sysAclCode,jdbcType=VARCHAR}
+            , #{item.sysAclIcon,jdbcType=VARCHAR}
+            , #{item.sysAclName,jdbcType=VARCHAR}
+            , #{item.sysAclType,jdbcType=CHAR}
+            , #{item.sysAclUuid,jdbcType=VARCHAR}
+            , #{item.sysAclSeq,jdbcType=INTEGER}
+            , #{item.createTime,jdbcType=TIMESTAMP}
+            , #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </operation>
+
+    <!-- 不推荐使用全 update 有需要自己打开
+    <operation name="update" paramtype="object" remark="更新表:sys_acl">
+        <![CDATA[
+        UPDATE sys_acl
+        SET
+            SYS_ACL_MODULE_ID = #{sysAclModuleId,jdbcType=BIGINT}
+            ,REMARK          = #{remark,jdbcType=VARCHAR}
+            ,DEL_FLAG        = #{delFlag,jdbcType=CHAR}
+            ,CREATE_BY       = #{createBy,jdbcType=VARCHAR}
+            ,UPDATE_BY       = #{updateBy,jdbcType=VARCHAR}
+            ,SYS_ACL_URL     = #{sysAclUrl,jdbcType=VARCHAR}
+            ,SYS_ACL_CODE    = #{sysAclCode,jdbcType=VARCHAR}
+            ,SYS_ACL_ICON    = #{sysAclIcon,jdbcType=VARCHAR}
+            ,SYS_ACL_NAME    = #{sysAclName,jdbcType=VARCHAR}
+            ,SYS_ACL_TYPE    = #{sysAclType,jdbcType=CHAR}
+            ,SYS_ACL_UUID    = #{sysAclUuid,jdbcType=VARCHAR}
+            ,SYS_ACL_SEQ     = #{sysAclSeq,jdbcType=INTEGER}
+            ,CREATE_TIME     = #{createTime,jdbcType=TIMESTAMP}
+            ,UPDATE_TIME     = #{updateTime,jdbcType=TIMESTAMP}
+        WHERE
+            ID              = #{id,jdbcType=BIGINT}
+        ]]>
+    </operation>
+    -->
+    <operation name="deleteById" remark="根据主键删除数据:sys_acl">
+        <![CDATA[
+        DELETE FROM sys_acl
+        WHERE
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </operation>
+
+    <operation name="getById" multiplicity="one" remark="根据主键获取数据:sys_acl">
+        SELECT *
+        FROM sys_acl
+        WHERE
+        <![CDATA[
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </operation>
+    <operation name="getByUrl" multiplicity="many" remark="判断用户是否有权限访问系统资源">
+        SELECT
+        id, sys_acl_uuid, sys_acl_code, sys_acl_name, sys_acl_module_id, sys_acl_url, sys_acl_type,
+        sys_acl_icon, sys_acl_seq, remark, del_flag,name
+        FROM sys_acl
+        WHERE sys_acl_url=#{url,jdbcType=VARCHAR} and del_flag=0
+    </operation>
+    <operation name="getRoleListByAcls" multiplicity="many" remark="根据权限点列表查询权限列表">
+        SELECT
+        sys_acl_name, sys_acl_module_id,sys_acl_type,name
+        FROM sys_acl WHERE id
+        IN(
+        SELECT sys_acl_id FROM sys_role_acl WHERE sys_role_id=#{sysRoleId,jdbcType=BIGINT} AND del_flag=0
+        ) AND del_flag=0
+    </operation>
+    <operation name="getAll" multiplicity="many" paramtype="object" remark="获得所有权限列表">
+        select
+        ID
+        ,SYS_ACL_MODULE_ID
+        ,DEL_FLAG
+        ,SYS_ACL_URL
+        ,SYS_ACL_CODE
+        ,SYS_ACL_NAME
+        ,SYS_ACL_TYPE
+        ,SYS_ACL_UUID
+        ,SYS_ACL_SEQ
+        ,sys_acl_action
+        ,sys_acl_router
+        ,name
+        ,sys_acl_permission_type
+        from sys_acl where DEL_FLAG=0
+        <if test="sysAclPermissionType !=null">
+            and sys_acl_permission_type=#{sysAclPermissionType,jdbcType=INTEGER}
+        </if>
+    </operation>
+    <operation name="getByIdList" paramtype="objectList" multiplicity="many" remark="根据权限id集合查询权限点对象的集合">
+        SELECT ID
+        ,SYS_ACL_MODULE_ID
+        ,DEL_FLAG
+        ,SYS_ACL_URL
+        ,SYS_ACL_CODE
+        ,SYS_ACL_NAME
+        ,SYS_ACL_TYPE
+        ,SYS_ACL_UUID
+        ,SYS_ACL_SEQ
+        ,sys_acl_action
+        ,sys_acl_router
+        ,name
+        ,sys_acl_permission_type
+        FROM sys_acl
+        WHERE id IN
+        <foreach collection="list" item="ids" open="(" close=")" separator=",">
+            #{ids.id,jdbcType=VARCHAR}
+        </foreach>
+        AND DEL_FLAG=0
+    </operation>
+    <operation name="findSysAclByUuid" multiplicity="one" remark="根据uuid查询权限点表">
+        select * from sys_acl
+        where
+        sys_acl_uuid=#{sysAclUuid,jdbcType=VARCHAR}
+    </operation>
+</table>

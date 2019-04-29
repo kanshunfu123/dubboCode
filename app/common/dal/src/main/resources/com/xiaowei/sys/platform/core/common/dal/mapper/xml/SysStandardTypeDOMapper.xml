@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xiaowei.sys.platform.core.common.dal.mapper.SysStandardTypeDOMapper">
+    <!-- 自动生成,请修改 SYS_STANDARD_TYPE.xml -->
+    <resultMap id="BaseResultMap"  type="com.xiaowei.sys.platform.core.common.dal.dataobject.SysStandardTypeDO">
+        <id column="ID" property="id" jdbcType="BIGINT" javaType="Long"/>
+        <result column="DEL_FLAG" property="delFlag" jdbcType="CHAR" javaType="String"/>
+        <result column="CODE_NAME" property="codeName" jdbcType="VARCHAR" javaType="String"/>
+        <result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" javaType="String"/>
+        <result column="UPDATE_BY" property="updateBy" jdbcType="VARCHAR" javaType="String"/>
+        <result column="CODE_VALUE" property="codeValue" jdbcType="VARCHAR" javaType="String"/>
+        <result column="PARENT_VALUE" property="parentValue" jdbcType="VARCHAR" javaType="String"/>
+        <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+    </resultMap>
+
+
+    <sql id="Base_SF_Column_List">
+        sf.ID,sf.DEL_FLAG,sf.CODE_NAME,sf.CREATE_BY,sf.UPDATE_BY
+        ,sf.CODE_VALUE,sf.PARENT_VALUE,sf.CREATE_TIME,sf.UPDATE_TIME
+    </sql>
+    <sql id="Base_Column_List">
+        ID,DEL_FLAG,CODE_NAME,CREATE_BY,UPDATE_BY 
+        ,CODE_VALUE,PARENT_VALUE,CREATE_TIME,UPDATE_TIME
+    </sql>
+
+
+    <!--插入表:sys_standard_type-->
+    <insert id="insert" >
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        <![CDATA[
+        INSERT INTO sys_standard_type(
+            ID
+            ,DEL_FLAG
+            ,CODE_NAME
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,CODE_VALUE
+            ,PARENT_VALUE
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES(
+             null
+            , #{delFlag,jdbcType=CHAR}
+            , #{codeName,jdbcType=VARCHAR}
+            , #{createBy,jdbcType=VARCHAR}
+            , #{updateBy,jdbcType=VARCHAR}
+            , #{codeValue,jdbcType=VARCHAR}
+            , #{parentValue,jdbcType=INTEGER}
+            , #{createTime,jdbcType=TIMESTAMP}
+            , #{updateTime,jdbcType=TIMESTAMP}
+        )
+        ]]>
+    </insert>
+
+    <!--批量插入表:sys_standard_type-->
+    <insert id="insertBatch" >
+        INSERT INTO sys_standard_type(
+            ID
+            ,DEL_FLAG
+            ,CODE_NAME
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,CODE_VALUE
+            ,PARENT_VALUE
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                 null
+                , #{item.delFlag,jdbcType=CHAR}
+                , #{item.codeName,jdbcType=VARCHAR}
+                , #{item.createBy,jdbcType=VARCHAR}
+                , #{item.updateBy,jdbcType=VARCHAR}
+                , #{item.codeValue,jdbcType=VARCHAR}
+                , #{item.parentValue,jdbcType=INTEGER}
+                , #{item.createTime,jdbcType=TIMESTAMP}
+                , #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <!--根据主键删除数据:sys_standard_type-->
+    <delete id="deleteById" >
+        <![CDATA[
+        DELETE /*MS-SYS-STANDARD-TYPE-DELETEBYID*/ FROM sys_standard_type
+        WHERE
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </delete>
+
+    <!--根据主键获取数据:sys_standard_type-->
+    <select id="getById" resultMap="BaseResultMap">
+        SELECT /*MS-SYS-STANDARD-TYPE-GETBYID*/  <include refid="Base_Column_List" />
+        FROM sys_standard_type
+        WHERE
+        <![CDATA[
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </select>
+
+    <!--根据codeValue查询codeName-->
+    <select id="getNameByValue" resultMap="BaseResultMap">
+        select /*MS-SYS-STANDARD-TYPE-GETNAMEBYVALUE*/ <include refid="Base_Column_List" />
+        from sys_standard_type
+        where
+        code_value=#{codeValue,jdbcType=VARCHAR}
+    </select>
+
+    <!--根据parentValue查询水质标准类型-->
+    <select id="getByValue" resultMap="BaseResultMap">
+        select /*MS-SYS-STANDARD-TYPE-GETBYVALUE*/ <include refid="Base_Column_List" />
+        from sys_standard_type
+        where
+        parent_value=#{parentValue,jdbcType=VARCHAR}
+    </select>
+</mapper>

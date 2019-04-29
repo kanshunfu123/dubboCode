@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xiaowei.sys.platform.core.common.dal.mapper.SysAclDOMapper">
+    <!-- 自动生成,请修改 SYS_ACL.xml -->
+    <resultMap id="BaseResultMap"  type="com.xiaowei.sys.platform.core.common.dal.dataobject.SysAclDO">
+        <id column="ID" property="id" jdbcType="BIGINT" javaType="Long"/>
+        <result column="SYS_ACL_MODULE_ID" property="sysAclModuleId" jdbcType="BIGINT" javaType="Long"/>
+        <result column="NAME" property="name" jdbcType="VARCHAR" javaType="String"/>
+        <result column="REMARK" property="remark" jdbcType="VARCHAR" javaType="String"/>
+        <result column="DEL_FLAG" property="delFlag" jdbcType="CHAR" javaType="String"/>
+        <result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" javaType="String"/>
+        <result column="UPDATE_BY" property="updateBy" jdbcType="VARCHAR" javaType="String"/>
+        <result column="SYS_ACL_URL" property="sysAclUrl" jdbcType="VARCHAR" javaType="String"/>
+        <result column="SYS_ACL_CODE" property="sysAclCode" jdbcType="VARCHAR" javaType="String"/>
+        <result column="SYS_ACL_ICON" property="sysAclIcon" jdbcType="VARCHAR" javaType="String"/>
+        <result column="SYS_ACL_NAME" property="sysAclName" jdbcType="VARCHAR" javaType="String"/>
+        <result column="SYS_ACL_TYPE" property="sysAclType" jdbcType="CHAR" javaType="String"/>
+        <result column="SYS_ACL_UUID" property="sysAclUuid" jdbcType="VARCHAR" javaType="String"/>
+        <result column="SYS_ACL_ACTION" property="sysAclAction" jdbcType="VARCHAR" javaType="String"/>
+        <result column="SYS_ACL_ROUTER" property="sysAclRouter" jdbcType="VARCHAR" javaType="String"/>
+        <result column="SYS_ACL_SEQ" property="sysAclSeq" jdbcType="INTEGER" javaType="Integer"/>
+        <result column="SYS_ACL_PERMISSION_TYPE" property="sysAclPermissionType" jdbcType="INTEGER" javaType="Integer"/>
+        <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+    </resultMap>
+
+
+    <sql id="Base_SF_Column_List">
+        sf.ID,sf.SYS_ACL_MODULE_ID,sf.REMARK,sf.DEL_FLAG,sf.CREATE_BY
+        ,sf.UPDATE_BY,sf.SYS_ACL_URL,sf.SYS_ACL_CODE,sf.SYS_ACL_ICON,sf.SYS_ACL_NAME
+        ,sf.SYS_ACL_TYPE,sf.SYS_ACL_UUID,sf.SYS_ACL_SEQ,sf.CREATE_TIME,sf.UPDATE_TIME
+    </sql>
+    <sql id="Base_Column_List">
+        ID,SYS_ACL_MODULE_ID,REMARK,DEL_FLAG,CREATE_BY
+        ,UPDATE_BY,SYS_ACL_URL,SYS_ACL_CODE,SYS_ACL_ICON,SYS_ACL_NAME
+        ,SYS_ACL_TYPE,SYS_ACL_UUID,SYS_ACL_SEQ,CREATE_TIME,UPDATE_TIME
+    </sql>
+
+
+    <!--插入表:sys_acl-->
+    <insert id="insert" >
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        <![CDATA[
+        INSERT INTO sys_acl(
+            ID
+            ,SYS_ACL_MODULE_ID
+            ,REMARK
+            ,DEL_FLAG
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,SYS_ACL_URL
+            ,SYS_ACL_CODE
+            ,SYS_ACL_ICON
+            ,SYS_ACL_NAME
+            ,SYS_ACL_TYPE
+            ,SYS_ACL_UUID
+            ,SYS_ACL_SEQ
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES(
+             null
+            , #{sysAclModuleId,jdbcType=BIGINT}
+            , #{remark,jdbcType=VARCHAR}
+            , #{delFlag,jdbcType=CHAR}
+            , #{createBy,jdbcType=VARCHAR}
+            , #{updateBy,jdbcType=VARCHAR}
+            , #{sysAclUrl,jdbcType=VARCHAR}
+            , #{sysAclCode,jdbcType=VARCHAR}
+            , #{sysAclIcon,jdbcType=VARCHAR}
+            , #{sysAclName,jdbcType=VARCHAR}
+            , #{sysAclType,jdbcType=CHAR}
+            , #{sysAclUuid,jdbcType=VARCHAR}
+            , #{sysAclSeq,jdbcType=INTEGER}
+            , #{createTime,jdbcType=TIMESTAMP}
+            , #{updateTime,jdbcType=TIMESTAMP}
+        )
+        ]]>
+    </insert>
+
+    <!--批量插入表:sys_acl-->
+    <insert id="insertBatch" >
+        INSERT INTO sys_acl(
+        ID
+        ,SYS_ACL_MODULE_ID
+        ,REMARK
+        ,DEL_FLAG
+        ,CREATE_BY
+        ,UPDATE_BY
+        ,SYS_ACL_URL
+        ,SYS_ACL_CODE
+        ,SYS_ACL_ICON
+        ,SYS_ACL_NAME
+        ,SYS_ACL_TYPE
+        ,SYS_ACL_UUID
+        ,SYS_ACL_SEQ
+        ,CREATE_TIME
+        ,UPDATE_TIME
+        )VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            null
+            , #{item.sysAclModuleId,jdbcType=BIGINT}
+            , #{item.remark,jdbcType=VARCHAR}
+            , #{item.delFlag,jdbcType=CHAR}
+            , #{item.createBy,jdbcType=VARCHAR}
+            , #{item.updateBy,jdbcType=VARCHAR}
+            , #{item.sysAclUrl,jdbcType=VARCHAR}
+            , #{item.sysAclCode,jdbcType=VARCHAR}
+            , #{item.sysAclIcon,jdbcType=VARCHAR}
+            , #{item.sysAclName,jdbcType=VARCHAR}
+            , #{item.sysAclType,jdbcType=CHAR}
+            , #{item.sysAclUuid,jdbcType=VARCHAR}
+            , #{item.sysAclSeq,jdbcType=INTEGER}
+            , #{item.createTime,jdbcType=TIMESTAMP}
+            , #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <!--根据主键删除数据:sys_acl-->
+    <delete id="deleteById" >
+        <![CDATA[
+        DELETE /*MS-SYS-ACL-DELETEBYID*/ FROM sys_acl
+        WHERE
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </delete>
+
+    <!--根据主键获取数据:sys_acl-->
+    <select id="getById" resultMap="BaseResultMap">
+        SELECT /*MS-SYS-ACL-GETBYID*/  <include refid="Base_Column_List" />
+        FROM sys_acl
+        WHERE
+        <![CDATA[
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </select>
+
+    <!--判断用户是否有权限访问系统资源-->
+    <select id="getByUrl" resultMap="BaseResultMap">
+        SELECT
+        id, sys_acl_uuid, sys_acl_code, sys_acl_name, sys_acl_module_id, sys_acl_url, sys_acl_type,
+        sys_acl_icon, sys_acl_seq, remark, del_flag,name
+        FROM sys_acl
+        WHERE sys_acl_url=#{url,jdbcType=VARCHAR} and del_flag=0
+    </select>
+
+    <!--根据权限点列表查询权限列表-->
+    <select id="getRoleListByAcls" resultMap="BaseResultMap">
+        SELECT /*MS-SYS-ACL-GETROLELISTBYACLS*/ 
+        sys_acl_name, sys_acl_module_id,sys_acl_type,name
+        FROM sys_acl WHERE id
+        IN(
+        SELECT /*MS-SYS-ACL-GETROLELISTBYACLS*/  sys_acl_id FROM sys_role_acl WHERE sys_role_id=#{sysRoleId,jdbcType=BIGINT} AND del_flag=0
+        ) AND del_flag=0
+    </select>
+
+    <!--获得所有权限列表-->
+    <select id="getAll" resultMap="BaseResultMap">
+        select
+        ID
+        ,SYS_ACL_MODULE_ID
+        ,DEL_FLAG
+        ,SYS_ACL_URL
+        ,SYS_ACL_CODE
+        ,SYS_ACL_NAME
+        ,SYS_ACL_TYPE
+        ,SYS_ACL_UUID
+        ,SYS_ACL_SEQ
+        ,sys_acl_action
+        ,sys_acl_router
+        ,name
+        ,sys_acl_permission_type
+        from sys_acl where DEL_FLAG=0
+        <if test="sysAclPermissionType !=null">
+            and sys_acl_permission_type=#{sysAclPermissionType,jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <!--根据权限id集合查询权限点对象的集合-->
+    <select id="getByIdList" resultMap="BaseResultMap">
+        SELECT /*MS-SYS-ACL-GETBYIDLIST*/  ID
+        ,SYS_ACL_MODULE_ID
+        ,DEL_FLAG
+        ,SYS_ACL_URL
+        ,SYS_ACL_CODE
+        ,SYS_ACL_NAME
+        ,SYS_ACL_TYPE
+        ,SYS_ACL_UUID
+        ,SYS_ACL_SEQ
+        ,sys_acl_action
+        ,sys_acl_router
+        ,name
+        ,sys_acl_permission_type
+        FROM sys_acl
+        WHERE id IN
+        <foreach collection="list" item="ids" open="(" close=")" separator=",">
+            #{ids.id,jdbcType=VARCHAR}
+        </foreach>
+        AND DEL_FLAG=0
+    </select>
+
+    <!--根据uuid查询权限点表-->
+    <select id="findSysAclByUuid" resultMap="BaseResultMap">
+        select /*MS-SYS-ACL-FINDSYSACLBYUUID*/ <include refid="Base_Column_List" /> from sys_acl
+        where
+        sys_acl_uuid=#{sysAclUuid,jdbcType=VARCHAR}
+    </select>
+</mapper>

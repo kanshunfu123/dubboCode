@@ -1,0 +1,125 @@
+<!DOCTYPE table SYSTEM "../config/table-config-1.0.dtd">
+<table sqlname="sys_standard_type" physicalName="sys_standard_type" remark="水质标准类型">
+    <!--  特殊字符说明 &lt;&gt; <> -->
+    <!-- baseSql option中 select * 会自动替换为 include -->
+    <sql id="Base_Column_List">
+        ID,DEL_FLAG,CODE_NAME,CREATE_BY,UPDATE_BY 
+        ,CODE_VALUE,PARENT_VALUE,CREATE_TIME,UPDATE_TIME
+    </sql>
+
+    <!-- baseSql option中 select sf.* 会自动替换为 include -->
+    <sql id="Base_SF_Column_List">
+        sf.ID,sf.DEL_FLAG,sf.CODE_NAME,sf.CREATE_BY,sf.UPDATE_BY
+        ,sf.CODE_VALUE,sf.PARENT_VALUE,sf.CREATE_TIME,sf.UPDATE_TIME
+    </sql>
+
+    <operation name="insert" paramtype="object" remark="插入表:sys_standard_type">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        <![CDATA[
+        INSERT INTO sys_standard_type(
+            ID
+            ,DEL_FLAG
+            ,CODE_NAME
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,CODE_VALUE
+            ,PARENT_VALUE
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES(
+             null
+            , #{delFlag,jdbcType=CHAR}
+            , #{codeName,jdbcType=VARCHAR}
+            , #{createBy,jdbcType=VARCHAR}
+            , #{updateBy,jdbcType=VARCHAR}
+            , #{codeValue,jdbcType=VARCHAR}
+            , #{parentValue,jdbcType=INTEGER}
+            , #{createTime,jdbcType=TIMESTAMP}
+            , #{updateTime,jdbcType=TIMESTAMP}
+        )
+        ]]>
+    </operation>
+
+    <!-- foreach 可以自定义类型，paramtype="primitive" foreach->javatype="自己书写的类"  -->
+    <!-- 只有一个参数且为List时必须将参数命名为list -->
+    <operation name="insertBatch" paramtype="objectList" remark="批量插入表:sys_standard_type">
+        INSERT INTO sys_standard_type(
+            ID
+            ,DEL_FLAG
+            ,CODE_NAME
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,CODE_VALUE
+            ,PARENT_VALUE
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES
+        <foreach collection="list"  item="item" separator=",">
+            (
+                 null
+                , #{item.delFlag,jdbcType=CHAR}
+                , #{item.codeName,jdbcType=VARCHAR}
+                , #{item.createBy,jdbcType=VARCHAR}
+                , #{item.updateBy,jdbcType=VARCHAR}
+                , #{item.codeValue,jdbcType=VARCHAR}
+                , #{item.parentValue,jdbcType=INTEGER}
+                , #{item.createTime,jdbcType=TIMESTAMP}
+                , #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </operation>
+
+    <!-- 不推荐使用全 update 有需要自己打开
+    <operation name="update" paramtype="object" remark="更新表:sys_standard_type">
+        <![CDATA[
+        UPDATE sys_standard_type
+        SET
+            DEL_FLAG        = #{delFlag,jdbcType=CHAR}
+            ,CODE_NAME       = #{codeName,jdbcType=VARCHAR}
+            ,CREATE_BY       = #{createBy,jdbcType=VARCHAR}
+            ,UPDATE_BY       = #{updateBy,jdbcType=VARCHAR}
+            ,CODE_VALUE      = #{codeValue,jdbcType=VARCHAR}
+            ,PARENT_VALUE    = #{parentValue,jdbcType=INTEGER}
+            ,CREATE_TIME     = #{createTime,jdbcType=TIMESTAMP}
+            ,UPDATE_TIME     = #{updateTime,jdbcType=TIMESTAMP}
+        WHERE
+            ID              = #{id,jdbcType=BIGINT}
+        ]]>
+    </operation>
+    -->
+    <operation name="deleteById"  remark="根据主键删除数据:sys_standard_type">
+        <![CDATA[
+        DELETE FROM sys_standard_type
+        WHERE
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </operation>
+
+    <operation name="getById" multiplicity="one" remark="根据主键获取数据:sys_standard_type">
+        SELECT *
+        FROM sys_standard_type
+        WHERE
+        <![CDATA[
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </operation>
+
+    <operation name="getNameByValue" multiplicity="one" remark="根据codeValue查询codeName">
+        select *
+        from sys_standard_type
+        where
+        code_value=#{codeValue,jdbcType=VARCHAR}
+    </operation>
+
+    <operation name="getByValue" multiplicity="many" remark="根据parentValue查询水质标准类型">
+        select *
+        from sys_standard_type
+        where
+        parent_value=#{parentValue,jdbcType=VARCHAR}
+    </operation>
+
+
+</table>

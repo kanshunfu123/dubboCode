@@ -1,0 +1,178 @@
+<!DOCTYPE table SYSTEM "../config/table-config-1.0.dtd">
+<table sqlname="sys_standard" physicalName="sys_standard" remark="SYS_STANDARD">
+    <!--  特殊字符说明 &lt;&gt; <> -->
+    <!-- baseSql option中 select * 会自动替换为 include -->
+    <sql id="Base_Column_List">
+        ID,STANDARD_TYPEID,DEL_FLAG,CREATE_BY,UPDATE_BY
+        ,STANDARD_NAME,STANDARD_UUID,CREATE_TIME,UPDATE_TIME
+    </sql>
+
+    <!-- baseSql option中 select sf.* 会自动替换为 include -->
+    <sql id="Base_SF_Column_List">
+        sf.ID,sf.STANDARD_TYPEID,sf.DEL_FLAG,sf.CREATE_BY,sf.UPDATE_BY
+        ,sf.STANDARD_NAME,sf.STANDARD_UUID,sf.CREATE_TIME,sf.UPDATE_TIME
+    </sql>
+
+    <operation name="insert" paramtype="object" remark="插入表:sys_standard">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        <![CDATA[
+        INSERT INTO sys_standard(
+            ID
+            ,STANDARD_TYPEID
+            ,DEL_FLAG
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,STANDARD_NAME
+            ,STANDARD_UUID
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES(
+             null
+            , #{standardTypeid,jdbcType=VARCHAR}
+            , #{delFlag,jdbcType=CHAR}
+            , #{createBy,jdbcType=VARCHAR}
+            , #{updateBy,jdbcType=VARCHAR}
+            , #{standardName,jdbcType=VARCHAR}
+            , #{standardUuid,jdbcType=VARCHAR}
+            , #{createTime,jdbcType=TIMESTAMP}
+            , #{updateTime,jdbcType=TIMESTAMP}
+        )
+        ]]>
+    </operation>
+
+    <!-- foreach 可以自定义类型，paramtype="primitive" foreach->javatype="自己书写的类"  -->
+    <!-- 只有一个参数且为List时必须将参数命名为list -->
+    <operation name="insertBatch" paramtype="objectList" remark="批量插入表:sys_standard">
+        INSERT INTO sys_standard(
+            ID
+            ,STANDARD_TYPEID
+            ,DEL_FLAG
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,STANDARD_NAME
+            ,STANDARD_UUID
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES
+        <foreach collection="list"  item="item" separator=",">
+            (
+                 null
+                , #{item.standardTypeid,jdbcType=VARCHAR}
+                , #{item.delFlag,jdbcType=CHAR}
+                , #{item.createBy,jdbcType=VARCHAR}
+                , #{item.updateBy,jdbcType=VARCHAR}
+                , #{item.standardName,jdbcType=VARCHAR}
+                , #{item.standardUuid,jdbcType=VARCHAR}
+                , #{item.createTime,jdbcType=TIMESTAMP}
+                , #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </operation>
+
+        <operation name="update" paramtype="object" remark="更新表:SYS_STANDARD">
+            UPDATE sys_standard
+            SET
+                    DEL_FLAG        = #{delFlag,jdbcType=CHAR}
+                    ,CREATE_BY       = #{createBy,jdbcType=VARCHAR}
+                    ,UPDATE_BY       = #{updateBy,jdbcType=VARCHAR}
+                    ,STANDARD_NAME   = #{standardName,jdbcType=VARCHAR}
+                    ,STANDARD_TYPEID = #{standardTypeid,jdbcType=VARCHAR}
+                    ,CREATE_TIME     = #{createTime,jdbcType=TIMESTAMP}
+                    ,UPDATE_TIME     = #{updateTime,jdbcType=TIMESTAMP}
+            WHERE
+            standard_uuid       = #{standardUuid,jdbcType=VARCHAR}
+        </operation>
+
+        <operation name="deleteById" multiplicity="one" remark="根据主键删除数据:SYS_STANDARD">
+            DELETE FROM SYS_STANDARD
+            WHERE
+                ID = #{id,jdbcType=BIGINT}
+        </operation>
+
+        <operation name="getById" multiplicity="one" remark="根据主键获取数据:SYS_STANDARD">
+            SELECT * FROM SYS_STANDARD
+            WHERE
+                ID = #{id,jdbcType=BIGINT}
+        </operation>
+        <operation name="getstandardByUuid" multiplicity="one" remark="根据uuid获取数据:SYS_STANDARD">
+             SELECT * FROM sys_standard
+             WHERE
+            standard_uuid       = #{standardUuid,jdbcType=VARCHAR}
+            and del_flag=0
+        </operation>
+        <operation name="deleteByUuid" multiplicity="one" remark="逻辑删除">
+          UPDATE sys_standard
+          SET
+          DEL_FLAG        = #{delFlag,jdbcType=CHAR}
+            WHERE
+            standard_uuid       = #{standardUuid,jdbcType=VARCHAR}
+        </operation>
+    <resultmap name="standardListMap" type="StandardResult" remark="水质标准列表">
+        <column name="id" javatype="long" jdbctype="BIGINT" remark="主键"/>
+        <column name="standard_uuid" javatype="String" jdbctype="VARCHAR" remark="标准UUID"/>
+        <column name="standard_name" javatype="String" jdbctype="VARCHAR" remark="标准名称"/>
+        <column name="standard_typeid" javatype="String" jdbctype="VARCHAR" remark="标准类型 ID关联scentype场景类型ID"/>
+    </resultmap>
+    <operation name="standardPaging" multiplicity="paging" paging="standardList" resultmap="standardListMap" remark="水质标准分页">
+        select
+        standard.id,
+        standard.standard_uuid,
+        standard.standard_name,
+        standard.standard_typeid
+        from sys_standard standard
+        <trim prefix="WHERE" prefixOverrides="AND||OR">
+                AND standard.del_flag=0
+            <if test="standardName!=null and standardName.trim()!=''">
+                AND standard.standard_name LIKE CONCAT('%',#{standardName,jdbcType=VARCHAR},'%')
+            </if>
+        </trim>
+        order by create_time desc
+    </operation>
+    <operation name="findSysStandardByName" multiplicity="one" resulttype="int" remark="根据标准名查询是否存在">
+        select count(id)
+        from sys_standard
+        where
+        standard_name=#{standardName,jdbcType=VARCHAR}
+    </operation>
+    <operation name="findSysStandardByMyName" multiplicity="one" resulttype="int" remark="根据标准名查询是否存在">
+        select count(id)
+        from sys_standard
+        where
+        standard_name=#{standardName,jdbcType=VARCHAR}
+        and id=#{id,jdbcType=BIGINT}
+    </operation>
+    <operation name="getStandard"  multiplicity="one" resulttype="int" remark="查询数量">
+        SELECT COUNT(id) FROM sys_standard WHERE standard_typeid=#{standardTypeid,jdbcType=VARCHAR}
+        AND del_flag=0
+    </operation>
+    <operation name="getstandardByTypeid" multiplicity="many" remark="根据Typeid获取数据:SYS_STANDARD">
+        SELECT * FROM sys_standard
+        WHERE
+        standard_typeid       = #{standardTypeid,jdbcType=VARCHAR} and del_flag=0
+    </operation>
+    <operation name="standByNamePaging" multiplicity="paging" paging="StandByName" remark="水质标准分页查询，带明细">
+        select
+        id, standard_uuid, standard_name,standard_uuid,
+        del_flag, standard_typeid
+        from sys_standard
+        <trim prefix="WHERE" prefixOverrides="AND || OR">
+            <if test="delFlag!=null">
+               AND del_flag=#{delFlag,jdbcType=VARCHAR}
+            </if>
+            <if test="standardName!=null and standardName.trim()!='' ">
+              AND  standard_name like CONCAT('%',#{standardName,jdbcType=VARCHAR},'%')
+            </if>
+        </trim>
+        order by create_time desc
+    </operation>
+    <operation name="findStandardByMyName" multiplicity="one" resulttype="int" remark="修改时根据标准名查询是否存在">
+        select count(id)
+        from sys_standard
+        where
+        standard_name=#{standardName,jdbcType=VARCHAR}
+        and id!=#{id,jdbcType=BIGINT}
+    </operation>
+</table>

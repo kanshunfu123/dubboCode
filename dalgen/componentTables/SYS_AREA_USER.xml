@@ -1,0 +1,131 @@
+<!DOCTYPE table SYSTEM "../config/table-config-1.0.dtd">
+<table sqlname="sys_area_user" physicalName="sys_area_user" remark="SYS_AREA_USER">
+    <!--  特殊字符说明 &lt;&gt; <> -->
+    <!-- baseSql option中 select * 会自动替换为 include -->
+    <sql id="Base_Column_List">
+        ID,SYS_AREA_ID,SYS_USER_ID,DEL_FLAG,CREATE_BY 
+        ,UPDATE_BY,CREATE_TIME,UPDATE_TIME
+    </sql>
+
+    <!-- baseSql option中 select sf.* 会自动替换为 include -->
+    <sql id="Base_SF_Column_List">
+        sf.ID,sf.SYS_AREA_ID,sf.SYS_USER_ID,sf.DEL_FLAG,sf.CREATE_BY
+        ,sf.UPDATE_BY,sf.CREATE_TIME,sf.UPDATE_TIME
+    </sql>
+
+    <operation name="insert" paramtype="object" remark="插入表:sys_area_user">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        <![CDATA[
+        INSERT INTO sys_area_user(
+            ID
+            ,SYS_AREA_ID
+            ,SYS_USER_ID
+            ,DEL_FLAG
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES(
+             null
+            , #{sysAreaId,jdbcType=BIGINT}
+            , #{sysUserId,jdbcType=BIGINT}
+            , #{delFlag,jdbcType=CHAR}
+            , #{createBy,jdbcType=VARCHAR}
+            , #{updateBy,jdbcType=VARCHAR}
+            , #{createTime,jdbcType=TIMESTAMP}
+            , #{updateTime,jdbcType=TIMESTAMP}
+        )
+        ]]>
+    </operation>
+
+    <!-- foreach 可以自定义类型，paramtype="primitive" foreach->javatype="自己书写的类"  -->
+    <!-- 只有一个参数且为List时必须将参数命名为list -->
+    <operation name="insertBatch" paramtype="objectList" remark="批量插入表:sys_area_user">
+        INSERT INTO sys_area_user(
+            ID
+            ,SYS_AREA_ID
+            ,SYS_USER_ID
+            ,DEL_FLAG
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES
+        <foreach collection="list"  item="item" separator=",">
+            (
+                 null
+                , #{item.sysAreaId,jdbcType=BIGINT}
+                , #{item.sysUserId,jdbcType=BIGINT}
+                , #{item.delFlag,jdbcType=CHAR}
+                , #{item.createBy,jdbcType=VARCHAR}
+                , #{item.updateBy,jdbcType=VARCHAR}
+                , #{item.createTime,jdbcType=TIMESTAMP}
+                , #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </operation>
+
+    <!-- 不推荐使用全 update 有需要自己打开
+    <operation name="update" paramtype="object" remark="更新表:sys_area_user">
+        <![CDATA[
+        UPDATE sys_area_user
+        SET
+            SYS_AREA_ID     = #{sysAreaId,jdbcType=BIGINT}
+            ,SYS_USER_ID     = #{sysUserId,jdbcType=BIGINT}
+            ,DEL_FLAG        = #{delFlag,jdbcType=CHAR}
+            ,CREATE_BY       = #{createBy,jdbcType=VARCHAR}
+            ,UPDATE_BY       = #{updateBy,jdbcType=VARCHAR}
+            ,CREATE_TIME     = #{createTime,jdbcType=TIMESTAMP}
+            ,UPDATE_TIME     = #{updateTime,jdbcType=TIMESTAMP}
+        WHERE
+            ID              = #{id,jdbcType=INTEGER}
+        ]]>
+    </operation>
+    -->
+    <operation name="deleteById"  remark="根据主键删除数据:sys_area_user">
+        <![CDATA[
+        DELETE FROM sys_area_user
+        WHERE
+            ID = #{id,jdbcType=INTEGER}
+        ]]>
+    </operation>
+
+    <operation name="getById" multiplicity="one" remark="根据主键获取数据:sys_area_user">
+        SELECT *
+        FROM sys_area_user
+        WHERE
+        <![CDATA[
+            ID = #{id,jdbcType=INTEGER}
+        ]]>
+    </operation>
+    <operation name="updateBatch" paramtype="objectList" remark="批量更新用户与区域">
+        <foreach collection="list" item="item" separator=";">
+            update sys_area_user set
+            del_flag = #{item.delFlag,jdbcType=CHAR},
+            update_time = #{item.updateTime,jdbcType=TIMESTAMP},
+            update_by = #{item.updateBy,jdbcType=VARCHAR}
+            where sys_user_id = #{item.sysUserId,jdbcType=VARCHAR}
+        </foreach>
+    </operation>
+    <operation name="insertBatchaa" paramtype="objectList" remark="批量插入用户与区域">
+        insert into sys_area_user ( sys_user_id, sys_area_id,
+        del_flag, create_by, create_time,
+        update_time, update_by,sys_user_area_uuid)
+        values
+        <foreach collection="list" item="areas" separator=",">
+             (#{areas.sysUserId,jdbcType=BIGINT}, #{areas.sysAreaId,jdbcType=BIGINT},
+            #{areas.delFlag,jdbcType=CHAR}, #{areas.createBy,jdbcType=VARCHAR}, #{areas.createTime,jdbcType=TIMESTAMP},
+            #{areas.updateTime,jdbcType=TIMESTAMP}, #{areas.updateBy,jdbcType=VARCHAR},#{areas.sysUserAreaUuid,jdbcType=VARCHAR})
+        </foreach>
+    </operation>
+    <operation name="getAreaUserListByUserId" multiplicity="many" remark="根据用户id，查询用户的区域id">
+        select sys_area_id from sys_area_user where sys_user_id=#{sysUserId,jdbcType=BIGINT} AND del_flag = 0
+    </operation>
+    <operation name="getArea"  multiplicity="one" resulttype="int" remark="删除区域">
+        SELECT COUNT(id) FROM sys_area_user WHERE sys_area_id=#{sysAreaId,jdbcType=BIGINT}
+        AND del_flag=0
+    </operation>
+</table>

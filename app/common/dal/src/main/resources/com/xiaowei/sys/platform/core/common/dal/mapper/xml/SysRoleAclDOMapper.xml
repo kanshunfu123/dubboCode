@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xiaowei.sys.platform.core.common.dal.mapper.SysRoleAclDOMapper">
+    <!-- 自动生成,请修改 SYS_ROLE_ACL.xml -->
+    <resultMap id="BaseResultMap"  type="com.xiaowei.sys.platform.core.common.dal.dataobject.SysRoleAclDO">
+        <id column="ID" property="id" jdbcType="BIGINT" javaType="Long"/>
+        <result column="SYS_ACL_ID" property="sysAclId" jdbcType="BIGINT" javaType="Long"/>
+        <result column="SYS_ROLE_ID" property="sysRoleId" jdbcType="BIGINT" javaType="Long"/>
+        <result column="DEL_FLAG" property="delFlag" jdbcType="CHAR" javaType="String"/>
+        <result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" javaType="String"/>
+        <result column="UPDATE_BY" property="updateBy" jdbcType="VARCHAR" javaType="String"/>
+        <result column="SYS_ROLE_ACL_UUID" property="sysRoleAclUuid" jdbcType="VARCHAR" javaType="String"/>
+        <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+    </resultMap>
+
+
+    <sql id="Base_SF_Column_List">
+        sf.ID,sf.SYS_ACL_ID,sf.SYS_ROLE_ID,sf.DEL_FLAG,sf.CREATE_BY
+        ,sf.UPDATE_BY,sf.SYS_ROLE_ACL_UUID,sf.CREATE_TIME,sf.UPDATE_TIME
+    </sql>
+    <sql id="Base_Column_List">
+        ID,SYS_ACL_ID,SYS_ROLE_ID,DEL_FLAG,CREATE_BY 
+        ,UPDATE_BY,SYS_ROLE_ACL_UUID,CREATE_TIME,UPDATE_TIME
+    </sql>
+
+
+    <!--插入表:sys_role_acl-->
+    <insert id="insert" >
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        <![CDATA[
+        INSERT INTO sys_role_acl(
+            ID
+            ,SYS_ACL_ID
+            ,SYS_ROLE_ID
+            ,DEL_FLAG
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,SYS_ROLE_ACL_UUID
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES(
+             null
+            , #{sysAclId,jdbcType=BIGINT}
+            , #{sysRoleId,jdbcType=BIGINT}
+            , #{delFlag,jdbcType=CHAR}
+            , #{createBy,jdbcType=VARCHAR}
+            , #{updateBy,jdbcType=VARCHAR}
+            , #{sysRoleAclUuid,jdbcType=VARCHAR}
+            , #{createTime,jdbcType=TIMESTAMP}
+            , #{updateTime,jdbcType=TIMESTAMP}
+        )
+        ]]>
+    </insert>
+
+    <!--批量插入表:sys_role_acl-->
+    <insert id="insertBatch" >
+        INSERT INTO sys_role_acl(
+            ID
+            ,SYS_ACL_ID
+            ,SYS_ROLE_ID
+            ,DEL_FLAG
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,SYS_ROLE_ACL_UUID
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                 null
+                , #{item.sysAclId,jdbcType=BIGINT}
+                , #{item.sysRoleId,jdbcType=BIGINT}
+                , #{item.delFlag,jdbcType=CHAR}
+                , #{item.createBy,jdbcType=VARCHAR}
+                , #{item.updateBy,jdbcType=VARCHAR}
+                , #{item.sysRoleAclUuid,jdbcType=VARCHAR}
+                , #{item.createTime,jdbcType=TIMESTAMP}
+                , #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <!--根据主键删除数据:sys_role_acl-->
+    <delete id="deleteById" >
+        <![CDATA[
+        DELETE /*MS-SYS-ROLE-ACL-DELETEBYID*/ FROM sys_role_acl
+        WHERE
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </delete>
+
+    <!--根据主键获取数据:sys_role_acl-->
+    <select id="getById" resultMap="BaseResultMap">
+        SELECT /*MS-SYS-ROLE-ACL-GETBYID*/  <include refid="Base_Column_List" />
+        FROM sys_role_acl
+        WHERE
+        <![CDATA[
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </select>
+
+    <!--根据角色id查询角色权限-->
+    <select id="findRoleAclByRoleId" resultMap="BaseResultMap">
+        select /*MS-SYS-ROLE-ACL-FINDROLEACLBYROLEID*/ <include refid="Base_Column_List" /> from sys_role_acl
+        where
+        sys_role_id=#{sysRoleId,jdbcType=BIGINT}
+    </select>
+
+    <!--根据角色uuid查询角色权限-->
+    <select id="findRoleAclByUuid" resultMap="BaseResultMap">
+        select /*MS-SYS-ROLE-ACL-FINDROLEACLBYUUID*/ <include refid="Base_Column_List" /> from sys_role_acl
+        where
+        sys_role_acl_uuid=#{sysRoleAclUuid,jdbcType=BIGINT}
+    </select>
+
+    <!--根据角色uuid和roleId查询角色权限是否存在-->
+    <select id="findRoleAclByUuidAndRoleId" resultMap="BaseResultMap">
+        select /*MS-SYS-ROLE-ACL-FINDROLEACLBYUUIDANDROLEID*/ <include refid="Base_Column_List" /> from sys_role_acl
+        where
+        sys_role_acl_uuid=#{sysRoleAclUuid,jdbcType=BIGINT}
+        and sys_role_id=#{sysRoleId,jdbcType=BIGINT}
+    </select>
+
+    <!--根据角色id删除角色权限-->
+    <delete id="deleteByRoleId" >
+        delete /*MS-SYS-ROLE-ACL-DELETEBYROLEID*/ from sys_role_acl
+        where
+        sys_role_id=#{sysRoleId,jdbcType=BIGINT}
+    </delete>
+
+    <!--根据角色编号查询角色权限的uuid-->
+    <select id="finddUuidByRoleId" resultType="String">
+        select /*MS-SYS-ROLE-ACL-FINDDUUIDBYROLEID*/ sys_role_acl_uuid from sys_role_acl
+        where
+        sys_role_id=#{sysRoleId,jdbcType=BIGINT}
+    </select>
+
+    <!--根据角色id删除角色权限-->
+    <delete id="deleteRoleAclByUuidAndRoleId" >
+        delete /*MS-SYS-ROLE-ACL-DELETEROLEACLBYUUIDANDROLEID*/ from sys_role_acl
+        where
+        sys_role_id=#{sysRoleId,jdbcType=BIGINT}
+        and sys_role_acl_uuid=#{sysRoleAclUuid,jdbcType=BIGINT}
+    </delete>
+
+    <!--根据角色id列表查询权限点id列表-->
+    <select id="getAclIdListByRoleIdList" resultMap="BaseResultMap">
+        SELECT /*MS-SYS-ROLE-ACL-GETACLIDLISTBYROLEIDLIST*/  sys_acl_id
+        FROM sys_role_acl
+        WHERE sys_role_id in
+        <foreach collection="list" item="roleIds" open="(" close=")" separator=",">
+            #{roleIds.sysRoleId,jdbcType=BIGINT}
+        </foreach>
+        AND DEL_FLAG=0
+    </select>
+</mapper>

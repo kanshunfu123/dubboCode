@@ -1,0 +1,150 @@
+<!DOCTYPE table SYSTEM "../config/table-config-1.0.dtd">
+<table sqlname="sys_role_acl" physicalName="sys_role_acl" remark="角色和权限中间表">
+    <!--  特殊字符说明 &lt;&gt; <> -->
+    <!-- baseSql option中 select * 会自动替换为 include -->
+    <sql id="Base_Column_List">
+        ID,SYS_ACL_ID,SYS_ROLE_ID,DEL_FLAG,CREATE_BY 
+        ,UPDATE_BY,SYS_ROLE_ACL_UUID,CREATE_TIME,UPDATE_TIME
+    </sql>
+
+    <!-- baseSql option中 select sf.* 会自动替换为 include -->
+    <sql id="Base_SF_Column_List">
+        sf.ID,sf.SYS_ACL_ID,sf.SYS_ROLE_ID,sf.DEL_FLAG,sf.CREATE_BY
+        ,sf.UPDATE_BY,sf.SYS_ROLE_ACL_UUID,sf.CREATE_TIME,sf.UPDATE_TIME
+    </sql>
+
+    <operation name="insert" paramtype="object" remark="插入表:sys_role_acl">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        <![CDATA[
+        INSERT INTO sys_role_acl(
+            ID
+            ,SYS_ACL_ID
+            ,SYS_ROLE_ID
+            ,DEL_FLAG
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,SYS_ROLE_ACL_UUID
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES(
+             null
+            , #{sysAclId,jdbcType=BIGINT}
+            , #{sysRoleId,jdbcType=BIGINT}
+            , #{delFlag,jdbcType=CHAR}
+            , #{createBy,jdbcType=VARCHAR}
+            , #{updateBy,jdbcType=VARCHAR}
+            , #{sysRoleAclUuid,jdbcType=VARCHAR}
+            , #{createTime,jdbcType=TIMESTAMP}
+            , #{updateTime,jdbcType=TIMESTAMP}
+        )
+        ]]>
+    </operation>
+
+    <!-- foreach 可以自定义类型，paramtype="primitive" foreach->javatype="自己书写的类"  -->
+    <!-- 只有一个参数且为List时必须将参数命名为list -->
+    <operation name="insertBatch" paramtype="objectList" remark="批量插入表:sys_role_acl">
+        INSERT INTO sys_role_acl(
+            ID
+            ,SYS_ACL_ID
+            ,SYS_ROLE_ID
+            ,DEL_FLAG
+            ,CREATE_BY
+            ,UPDATE_BY
+            ,SYS_ROLE_ACL_UUID
+            ,CREATE_TIME
+            ,UPDATE_TIME
+        )VALUES
+        <foreach collection="list"  item="item" separator=",">
+            (
+                 null
+                , #{item.sysAclId,jdbcType=BIGINT}
+                , #{item.sysRoleId,jdbcType=BIGINT}
+                , #{item.delFlag,jdbcType=CHAR}
+                , #{item.createBy,jdbcType=VARCHAR}
+                , #{item.updateBy,jdbcType=VARCHAR}
+                , #{item.sysRoleAclUuid,jdbcType=VARCHAR}
+                , #{item.createTime,jdbcType=TIMESTAMP}
+                , #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </operation>
+
+    <!-- 不推荐使用全 update 有需要自己打开
+    <operation name="update" paramtype="object" remark="更新表:sys_role_acl">
+        <![CDATA[
+        UPDATE sys_role_acl
+        SET
+            SYS_ACL_ID      = #{sysAclId,jdbcType=BIGINT}
+            ,SYS_ROLE_ID     = #{sysRoleId,jdbcType=BIGINT}
+            ,DEL_FLAG        = #{delFlag,jdbcType=CHAR}
+            ,CREATE_BY       = #{createBy,jdbcType=VARCHAR}
+            ,UPDATE_BY       = #{updateBy,jdbcType=VARCHAR}
+            ,SYS_ROLE_ACL_UUID = #{sysRoleAclUuid,jdbcType=VARCHAR}
+            ,CREATE_TIME     = #{createTime,jdbcType=TIMESTAMP}
+            ,UPDATE_TIME     = #{updateTime,jdbcType=TIMESTAMP}
+        WHERE
+            ID              = #{id,jdbcType=BIGINT}
+        ]]>
+    </operation>
+    -->
+    <operation name="deleteById"  remark="根据主键删除数据:sys_role_acl">
+        <![CDATA[
+        DELETE FROM sys_role_acl
+        WHERE
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </operation>
+
+    <operation name="getById" multiplicity="one" remark="根据主键获取数据:sys_role_acl">
+        SELECT *
+        FROM sys_role_acl
+        WHERE
+        <![CDATA[
+            ID = #{id,jdbcType=BIGINT}
+        ]]>
+    </operation>
+    <operation name="findRoleAclByRoleId" multiplicity="many" remark="根据角色id查询角色权限">
+        select * from sys_role_acl
+        where
+        sys_role_id=#{sysRoleId,jdbcType=BIGINT}
+    </operation>
+    <operation name="findRoleAclByUuid" multiplicity="one" remark="根据角色uuid查询角色权限">
+        select * from sys_role_acl
+        where
+        sys_role_acl_uuid=#{sysRoleAclUuid,jdbcType=BIGINT}
+    </operation>
+    <operation name="findRoleAclByUuidAndRoleId" multiplicity="one" remark="根据角色uuid和roleId查询角色权限是否存在">
+        select * from sys_role_acl
+        where
+        sys_role_acl_uuid=#{sysRoleAclUuid,jdbcType=BIGINT}
+        and sys_role_id=#{sysRoleId,jdbcType=BIGINT}
+    </operation>
+    <operation name="deleteByRoleId"  remark="根据角色id删除角色权限">
+        delete from sys_role_acl
+        where
+        sys_role_id=#{sysRoleId,jdbcType=BIGINT}
+    </operation>
+    <operation name="finddUuidByRoleId" multiplicity="many" resulttype="String" remark="根据角色编号查询角色权限的uuid">
+        select sys_role_acl_uuid from sys_role_acl
+        where
+        sys_role_id=#{sysRoleId,jdbcType=BIGINT}
+    </operation>
+    <operation name="deleteRoleAclByUuidAndRoleId"  remark="根据角色id删除角色权限">
+        delete from sys_role_acl
+        where
+        sys_role_id=#{sysRoleId,jdbcType=BIGINT}
+        and sys_role_acl_uuid=#{sysRoleAclUuid,jdbcType=BIGINT}
+    </operation>
+    <operation name="getAclIdListByRoleIdList" multiplicity="many" paramtype="objectList" remark="根据角色id列表查询权限点id列表">
+        SELECT sys_acl_id
+        FROM sys_role_acl
+        WHERE sys_role_id in
+        <foreach collection="list" item="roleIds" open="(" close=")" separator=",">
+            #{roleIds.sysRoleId,jdbcType=BIGINT}
+        </foreach>
+        AND DEL_FLAG=0
+    </operation>
+</table>

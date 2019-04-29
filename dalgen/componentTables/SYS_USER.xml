@@ -1,0 +1,315 @@
+<!DOCTYPE table SYSTEM "../config/table-config-1.0.dtd">
+<table sqlname="SYS_USER" physicalName="SYS_USER" remark="用户">
+    <!--  特殊字符说明  &lt;&gt;   <> -->
+
+    <operation name="insert" paramtype="object" remark="插入表:SYS_USER">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO SYS_USER(
+
+        AREAID
+        ,DEPTID
+        ,ROLEID
+        ,DEL_FLAG
+        ,CREATE_BY
+        ,UPDATE_BY
+        ,SYS_USER_PWD
+        ,SYS_USER_NAME
+        ,SYS_USER_EMAIL
+        ,SYS_USER_PHONE
+        ,SYS_USER_AUTH_SALT
+        ,CREATE_TIME
+        ,UPDATE_TIME
+        )VALUES(
+
+        #{areaid,jdbcType=BIGINT}
+        ,#{deptid,jdbcType=BIGINT}
+        ,#{roleid,jdbcType=BIGINT}
+        ,#{delFlag,jdbcType=CHAR}
+        ,#{createBy,jdbcType=VARCHAR}
+        ,#{updateBy,jdbcType=VARCHAR}
+        ,#{sysUserPwd,jdbcType=VARCHAR}
+        ,#{sysUserName,jdbcType=VARCHAR}
+        ,#{sysUserEmail,jdbcType=VARCHAR}
+        ,#{sysUserPhone,jdbcType=VARCHAR}
+        ,#{sysUserAuthSalt,jdbcType=VARCHAR}
+        ,#{createTime,jdbcType=TIMESTAMP}
+        ,#{updateTime,jdbcType=TIMESTAMP}
+        )
+    </operation>
+
+    <operation name="update" paramtype="object" remark="更新表:SYS_USER">
+        UPDATE SYS_USER
+        SET
+        AREAID = #{areaid,jdbcType=BIGINT}
+        ,DEPTID = #{deptid,jdbcType=BIGINT}
+        ,ROLEID = #{roleid,jdbcType=BIGINT}
+        ,DEL_FLAG = #{delFlag,jdbcType=CHAR}
+        ,CREATE_BY = #{createBy,jdbcType=VARCHAR}
+        ,UPDATE_BY = #{updateBy,jdbcType=VARCHAR}
+        ,SYS_USER_PWD = #{sysUserPwd,jdbcType=VARCHAR}
+        ,SYS_USER_NAME = #{sysUserName,jdbcType=VARCHAR}
+        ,SYS_USER_EMAIL = #{sysUserEmail,jdbcType=VARCHAR}
+        ,SYS_USER_PHONE = #{sysUserPhone,jdbcType=VARCHAR}
+        ,SYS_USER_AUTH_SALT = #{sysUserAuthSalt,jdbcType=VARCHAR}
+        ,CREATE_TIME = #{createTime,jdbcType=TIMESTAMP}
+        ,UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+        WHERE
+        ID = #{id,jdbcType=BIGINT}
+    </operation>
+
+    <operation name="deleteById" multiplicity="one" remark="根据主键删除数据:SYS_USER">
+        DELETE FROM SYS_USER
+        WHERE
+        ID = #{id,jdbcType=BIGINT}
+    </operation>
+
+    <operation name="getById" multiplicity="one" remark="根据主键获取数据:SYS_USER">
+        SELECT * FROM SYS_USER
+        WHERE
+        ID = #{id,jdbcType=BIGINT}
+    </operation>
+    <operation name="getByUuid" multiplicity="one" remark="根据主键获取数据:SYS_USER">
+        SELECT * FROM sys_user
+        WHERE
+        sys_user_uuid = #{sysUserUuid,jdbcType=BIGINT} AND del_flag=0
+    </operation>
+    <operation name="loginByUsername" multiplicity="one"  remark="根据手机号/邮箱登录">
+        SELECT * FROM sys_user
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="sysUserPhone!=null and sysUserPhone.trim()!=''">
+                AND sys_user_phone=#{sysUserPhone,jdbcType=VARCHAR}
+            </if>
+            <if test="sysUserEmail!=null and sysUserEmail.trim()!=''">
+                AND sys_user_email=#{sysUserEmail,jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </operation>
+    <operation name="userCountByDeptId" resulttype="int"  remark="根据部门id查询该部门是否有用户">
+        SELECT COUNT(id) FROM sys_user WHERE dept_id=#{deptId,jdbcType=BIGINT} AND del_flag=0
+    </operation>
+    <resultmap name="userRolesArea" type="userRoleSArea">
+        <column name="uId" javatype="long" jdbctype="BIGING"/>
+        <column name="sys_user_name" javatype="String" jdbctype="VARCHAR"/>
+        <column name="sys_user_uuid" javatype="String" jdbctype="VARCHAR"/>
+        <column name="dept_id" javatype="long" jdbctype="BIGINT"/>
+        <column name="area_id" javatype="long" jdbctype="BIGINT"/>
+        <column name="sys_user_phone" javatype="String" jdbctype="VARCHAR"/>
+        <column name="sys_user_email" javatype="String" jdbctype="VARCHAR"/>
+        <column name="sys_dept_name" javatype="String" jdbctype="VARCHAR"/>
+        <column name="sys_dept_uuid" javatype="String" jdbctype="VARCHAR"/>
+    </resultmap>
+    <operation name="userPaging" multiplicity="paging" paging="UserDeptAreaRoles" resultmap="userRolesArea" remark="多条件查询用户信息，部门、携带部门、角色、区域">
+        SELECT  u.id uId,sys_user_name, sys_user_uuid, dept_id, sys_user_phone,
+        sys_user_email, area_id,de.sys_dept_name,de.sys_dept_uuid FROM sys_user u
+        LEFT JOIN sys_dept de ON u.dept_id=de.id AND de.del_flag=#{deDelFlag,jdbcType=VARCHAR}
+        <trim prefix="WHERE" prefixOverrides="AND || OR">
+            <if test="uDelFlag!=null">
+                AND u.del_flag=#{uDelFlag,jdbcType=VARCHAR}
+            </if>
+            <if test="sysDeptName!=null and sysDeptName.trim()!=''">
+                AND sys_dept_name LIKE CONCAT('%',#{sysDeptName,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="sysUserName!=null and sysUserName.trim()!=''">
+                AND sys_user_name LIKE CONCAT('%',#{sysUserName,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="sysUserUuid!=null and sysUserUuid.trim()!=''">
+                AND sys_user_uuid =#{sysUserUuid,jdbcType=VARCHAR}
+            </if>
+        </trim>
+        ORDER BY u.create_time DESC
+    </operation>
+    <operation name="getUserInfiByUuid" multiplicity="one" resultmap="userRolesArea" remark="根据用户uuid查看 用户信息">
+        SELECT  u.id uId,sys_user_name, sys_user_uuid, dept_id, sys_user_phone,
+        sys_user_email, area_id,de.sys_dept_name,de.sys_dept_uuid FROM sys_user u
+        LEFT JOIN sys_dept de ON u.id=de.id AND de.del_flag=0
+        WHERE sys_user_uuid=#{sysUserUuid,jdbcType=VARCHAR} AND u.del_flag=0
+    </operation>
+    <operation name="checkPhoneORemailUniqueness" resulttype="int" remark="新增/编辑 用户名、邮箱唯一">
+        SELECT COUNT(id) from sys_user
+        <trim prefix="WHERE" prefixOverrides="AND || OR">
+            <if test="email!=null">
+                AND sys_user_email=#{email,jdbcType=VARCHAR}
+            </if>
+            <if test="phone!=null">
+                AND sys_user_phone=#{phone,jdbcType=VARCHAR}
+            </if>
+            <if test="uuid!=null">
+                AND  sys_user_uuid!=#{uuid,jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </operation>
+    <!--<operation name="roles" multiplicity="many" remark="根据用户的id查询角色信息">
+        SELECT sys_role_name,sys_role_uuid FROM sys_role WHERE id IN(
+        SELECT role_id FROM sys_role_user roleUser WHERE user_id=#{uId,jdbcType=VARCHAR} AND del_flag=0
+        )
+    </operation>-->
+    <operation name="updateUser" paramtype="object" remark="更新用户">
+        update sys_user
+        <set>
+            <if test="sysUserName != null">
+                sys_user_name = #{sysUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserUuid != null">
+                sys_user_uuid = #{sysUserUuid,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserPwd != null">
+                sys_user_pwd = #{sysUserPwd,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserAuthSalt != null">
+                sys_user_auth_salt = #{sysUserAuthSalt,jdbcType=VARCHAR},
+            </if>
+            <if test="deptId != null">
+                dept_id = #{deptId,jdbcType=BIGINT},
+            </if>
+            <if test="sysUserPhone != null">
+                sys_user_phone = #{sysUserPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserEmail != null">
+                sys_user_email = #{sysUserEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="areaId != null">
+                area_id = #{areaId,jdbcType=BIGINT},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag,jdbcType=CHAR},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where sys_user_uuid = #{sysUserUuid,jdbcType=VARCHAR}
+    </operation>
+
+    <operation name="insertUser" paramtype="object" remark="新增用户">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        insert into sys_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="sysUserName != null">
+                sys_user_name,
+            </if>
+            <if test="sysUserUuid != null">
+                sys_user_uuid,
+            </if>
+            <if test="sysUserPwd != null">
+                sys_user_pwd,
+            </if>
+            <if test="sysUserAuthSalt != null">
+                sys_user_auth_salt,
+            </if>
+            <if test="deptId != null">
+                dept_id,
+            </if>
+            <if test="sysUserPhone != null">
+                sys_user_phone,
+            </if>
+            <if test="sysUserEmail != null">
+                sys_user_email,
+            </if>
+            <if test="areaId != null">
+                area_id,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="sysUserName != null">
+                #{sysUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserUuid != null">
+                #{sysUserUuid,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserPwd != null">
+                #{sysUserPwd,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserAuthSalt != null">
+                #{sysUserAuthSalt,jdbcType=VARCHAR},
+            </if>
+            <if test="deptId != null">
+                #{deptId,jdbcType=BIGINT},
+            </if>
+            <if test="sysUserPhone != null">
+                #{sysUserPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserEmail != null">
+                #{sysUserEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="areaId != null">
+                #{areaId,jdbcType=BIGINT},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag,jdbcType=CHAR},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </operation>
+    <operation name="getUserListByDeptIds" multiplicity="many" paramtype="objectList" remark="根据部门id集合查询用户列表">
+        SELECT  id ,sys_user_name, sys_user_uuid, dept_id, sys_user_phone,
+        sys_user_email, area_id FROM sys_user
+        <trim prefix="where" prefixOverrides="and">
+            and del_flag=0
+            <if test="list!=null and list.size()!=0">
+               and dept_id IN
+                <foreach collection="list" item="deptIds" open="(" close=")" separator=",">
+                    #{deptIds.deptId,jdbcType=BIGINT}
+                </foreach>
+            </if>
+
+        </trim>
+    </operation>
+    <operation name="testUserOrderByParams" paramtype="object" multiplicity="many" remark="测试用户手动输入排序">
+        SELECT * FROM sys_user
+        <trim prefix="ORDER BY" prefixOverrides=",">
+            <if test="one!=null">
+                , ${one}
+            </if>
+            <if test="two!=null">
+                , ${two}
+            </if>
+        </trim>
+    </operation>
+</table>
